@@ -2,7 +2,8 @@ Installation
 ============
 
 The required library is Tornado_, and an optional library is SQLAlchemy_.
-Although SQLAlchemy is optional, it will be installed by default.
+Although SQLAlchemy is optional, you should install it if you want a better solution
+for database.
 
 Tornado is a web server, and June Tornado is built on it. SQLAlchemy is a powerful database
 engine, June Tornado provides an easy way to integrate it with Tornado.
@@ -47,6 +48,7 @@ Now, you are on a virtual environment called june. Any python package will be in
 on this june environment now::
 
     $ pip install junetornado
+    $ pip install SQLAlchemy
 
 
 System-Wide Installation

@@ -15,7 +15,6 @@ setup(
     scripts=['scripts/june.admin'],
     install_requires=[
         'tornado',
-        'SQLAlchemy',
     ],
     include_package_data=True,
     license='BSD License',
