@@ -35,6 +35,7 @@ if _first_run:
     define('cookie_secret', type=str)
 
     define('locale_path', type=str, help='absolute path of locale directory')
+    define('default_locale', default='en_US', type=str)
 
     define('login_url', default='/account/login', type=str,
            help='when use is not authenticated, redirect to login_url')
@@ -97,11 +98,14 @@ def register_app_handlers(handlers, app_list):
         /appname/delete
         /appname/...
     """
+    if not app_list:
+        return
     for app in app_list:
-        print('register: %s' % app[0])
         try:
             app_handlers = import_object('%s.handlers.urls' % app[1])
         except AttributeError:
+            app_handlers = []
+        except ImportError:
             app_handlers = []
         for spec in app_handlers:
             if isinstance(spec, tuple):
@@ -145,10 +149,14 @@ def register_app_ui_modules(ui_modules, app_list):
         }
 
     """
+    if not app_list:
+        return
     for app in app_list:
         try:
             app_modules = import_object('%s.handlers.ui_modules' % app[1])
         except AttributeError:
+            app_modules = {}
+        except ImportError:
             app_modules = {}
         ui_modules.update(app_modules)
 
@@ -217,10 +225,16 @@ class JuneApplication(web.Application):
         except ImportError:
             urls = None
 
-        handlers.extend(getattr(urls, 'handlers', []))
+        try:
+            handlers.extend(urls.handlers)
+        except AttributeError:
+            pass
         register_app_handlers(handlers, app_list)
 
-        ui_modules = getattr(urls, 'ui_modules', {})
+        try:
+            ui_modules = urls.ui_modules
+        except AttributeError:
+            ui_modules = {}
         register_app_ui_modules(ui_modules, app_list)
 
         settings.update(dict(
@@ -249,15 +263,6 @@ class JuneApplication(web.Application):
         else:
             JuneApplication.db = None
         JuneApplication.cache = cache
-
-        if options.locale_path:
-            #TODO: load app locale
-            self.load_locale()
-
-    def load_locale(self):
-        import tornado.locale
-        tornado.locale.load_translations(options.locale_path)
-        tornado.locale.set_default_locale(options.default_locale)
 
     def load_app_static(self, handlers, app_list):
         #TODO
@@ -324,15 +329,21 @@ class UIModule(web.UIModule):
         return self.handler.cache
 
 
-def run_server(app):
+def run_server(app_func):
     import tornado.options
+    import tornado.locale
     from tornado import httpserver, ioloop
+
+    tornado.options.parse_command_line()
     if options.settings:
         parse_config_file(options.settings)
 
-    tornado.options.parse_command_line()
-    server = httpserver.HTTPServer(app, xheaders=True)
+    server = httpserver.HTTPServer(app_func(), xheaders=True)
     server.listen(int(options.port))
+
+    if options.locale_path:
+        tornado.locale.load_translations(options.locale_path)
+        tornado.locale.set_default_locale(options.default_locale)
 
     try:
         import config
