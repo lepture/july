@@ -1,5 +1,5 @@
 
-from junetornado.web import JuneHandler
+from junetornado import JuneHandler
 
 
 class HomeHandler(JuneHandler):
