@@ -195,6 +195,8 @@ class SQLAlchemy(object):
         base.query = self.session.query_property()
         if self.slaves:
             base.slave = self._slave_query
+        else:
+            base.slave = lambda key=None: base.query
         return base
 
     def _slave_query(self, key=None):
