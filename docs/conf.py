@@ -43,7 +43,7 @@ master_doc = 'index'
 
 # General information about the project.
 project = u'June Tornado'
-copyright = u'2012, lepture'
+copyright = u'2012, <a href="http://lepture.com">lepture</a>'
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
