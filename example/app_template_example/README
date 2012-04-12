@@ -1,0 +1,5 @@
+Run this example by::
+
+    python app.py
+
+Browser at http://127.0.0.1:5000/app/
