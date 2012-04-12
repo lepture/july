@@ -18,27 +18,56 @@ os.environ["PYTHON_EGG_CACHE"] = "/tmp/egg"
 
 from tornado.options import define, options
 
-#: server configuration
-define('debug', default=True, type=bool, help='show debug information')
-define('port', default=5000, type=int, help='run server on this port')
+_first_run = True
+if _first_run:
+    #: server configuration
+    define('debug', default=True, type=bool, help='show debug information')
+    define('port', default=5000, type=int, help='run server on this port')
+    define('settings', default='', type=str, help='setting file path')
 
-#: application configuration
-define('template_path', type=str, help='absolute path of template directory')
-define('static_path', type=str, help='absolute path of static directory')
-define('static_url_prefix', default='/static/', type=str)
-define('enable_app_static', default=True, type=bool)
-define('xsrf_cookies', default=False, type=bool)
-define('cookie_secret', type=str)
+    #: application configuration
+    define('template_path', type=str,
+           help='absolute path of template directory')
+    define('static_path', type=str, help='absolute path of static directory')
+    define('static_url_prefix', default='/static/', type=str)
+    define('enable_app_static', default=True, type=bool)
+    define('xsrf_cookies', default=False, type=bool)
+    define('cookie_secret', type=str)
 
-define('locale_path', type=str, help='absolute path of locale directory')
+    define('locale_path', type=str, help='absolute path of locale directory')
 
-define('login_url', default='/account/login', type=str,
-       help='when use is not authenticated, redirect to login_url')
+    define('login_url', default='/account/login', type=str,
+           help='when use is not authenticated, redirect to login_url')
+
+    _first_run = False
 
 
+import logging
 from tornado import web, escape
 from tornado.util import import_object
 from tornado.template import Loader, Template
+from junetornado.util import parse_config_file
+
+
+def register_app(app_list):
+    """Detect if an app is available"""
+    for app in app_list:
+        name = app[0]
+        app = app[1]
+        if '.' in app:
+            module = import_object(app)
+        else:
+            module = __import__(app)
+
+        if hasattr(module, '__version__'):
+            version = module.__version__
+        elif hasattr(module, 'version'):
+            version = module.version
+        elif hasattr(module, 'VERSION'):
+            version = module.VERSION
+        else:
+            version = 'unknown'
+        logging.info("Load App: %s %s", name, version)
 
 
 def register_app_handlers(handlers, app_list):
@@ -69,6 +98,7 @@ def register_app_handlers(handlers, app_list):
         /appname/...
     """
     for app in app_list:
+        print('register: %s' % app[0])
         try:
             app_handlers = import_object('%s.handlers.urls' % app[1])
         except AttributeError:
@@ -297,18 +327,18 @@ class UIModule(web.UIModule):
 def run_server(app):
     import tornado.options
     from tornado import httpserver, ioloop
-    define('settings', '')
+    if options.settings:
+        parse_config_file(options.settings)
+
     tornado.options.parse_command_line()
     server = httpserver.HTTPServer(app, xheaders=True)
     server.listen(int(options.port))
-    print('Start server at 0.0.0.0:%s' % options.port)
+
+    try:
+        import config
+    except ImportError:
+        config = None
+    app_list = getattr(config, 'app_list', [])
+    register_app(app_list)
+    logging.info('Start server at 0.0.0.0:%s' % options.port)
     ioloop.IOLoop.instance().start()
-
-if __name__ == '__main__':
-    class HomeHandler(JuneHandler):
-        def get(self):
-            self.write('hello world')
-
-    handlers = [('/', HomeHandler)]
-    app = JuneApplication(handlers)
-    run_server(app)
