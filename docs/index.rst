@@ -1,5 +1,3 @@
-:orphan:
-
 June Tornado
 ==============
 
@@ -14,3 +12,6 @@ User's Guide documentation
     :maxdepth: 2
 
     install
+    quickstart
+    tutorial
+    application
