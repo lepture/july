@@ -12,7 +12,7 @@ setup(
     url='http://lepture.com/project/june',
     packages=['junetornado', 'junetornado.ext'],
     description='June Tornado: a better way to organize your tornado project',
-    scripts=['junetornado/bin/june.admin'],
+    scripts=['scripts/june.admin'],
     install_requires=[
         'tornado',
         'SQLAlchemy',

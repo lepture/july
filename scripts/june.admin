@@ -1,0 +1,28 @@
+#!/usr/bin/python
+import argparse
+
+
+def startproject():
+    pass
+
+
+def startapp():
+    pass
+
+
+def createdb():
+    pass
+
+
+def main():
+    parser = argparse.ArgumentParser(
+        prog='june.admin',
+        description=('June Tornado is a better way to organize your tornado'
+                     'project')
+    )
+    parser.add_argument('command', nargs='*')
+    print 'hello world'
+
+
+if __name__ == '__main__':
+    main()
