@@ -155,8 +155,9 @@ def create_session(engine):
 
 
 class SQLAlchemy(object):
-    """
-    Example::
+    """SQLAlchemy Wrapper, with Django-like filter_by and order_by
+
+    Basic usage example::
 
         db = SQLAlchemy("mysql://user:pass@host:port/db", pool_recycle=3600)
 
@@ -169,13 +170,17 @@ class SQLAlchemy(object):
         >>> User.query.filter_by(username='yourname')
 
     """
-    def __init__(self, master, slaves=[], **kwargs):
+    def __init__(self, master, slaves=None, **kwargs):
         self.engine = create_engine(master, **kwargs)
         self.session = create_session(self.engine)
-        self.slaves = []
-        for slave in  slaves:
-            slave = create_engine(slave, **kwargs)
-            self.slaves.append(create_session(slave))
+
+        self.slaves = {}
+        if isinstance(slaves, basestring):
+            self.slaves['default'] = create_engine(slaves, **kwargs)
+
+        if isinstance(slaves, dict):
+            for key, value in slaves.items():
+                self.slaves[key] = create_engine(value, **kwargs)
 
         if 'pool_recycle' in kwargs:
             # ping db, so that mysql won't goaway
@@ -185,20 +190,22 @@ class SQLAlchemy(object):
     @property
     def Model(self):
         if hasattr(self, '_base'):
-            base = self._base
-        else:
-            base = declarative_base(cls=Model, name='Model')
-            self._base = base
+            return self._base
+        base = declarative_base(cls=Model, name='Model')
+        base.query = self.session.query_property()
         if self.slaves:
-            slave = random.choice(self.slaves)
-            base.query = slave.query_property()
-        else:
-            base.query = self.session.query_property()
+            base.slave = self._slave_query
         return base
+
+    def _slave_query(self, key=None):
+        if key and key in self.slaves:
+            return self.slaves[key].query_property()
+        slave = random.choice(self.slaves)
+        return slave.query_property()
 
     def _ping_db(self):
         self.session.execute('show variables')
-        for slave in self.slaves:
+        for key, slave in self.slaves.items():
             slave.execute('show variables')
 
     def create_db(self):
