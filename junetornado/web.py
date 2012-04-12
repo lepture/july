@@ -36,9 +36,9 @@ define('login_url', default='/account/login', type=str,
        help='when use is not authenticated, redirect to login_url')
 
 
-import inspect
 from tornado import web, escape
 from tornado.util import import_object
+from tornado.template import Loader, Template
 
 
 def register_app_handlers(handlers, app_list):
@@ -69,7 +69,10 @@ def register_app_handlers(handlers, app_list):
         /appname/...
     """
     for app in app_list:
-        app_handlers = import_object('%s.handlers.urls' % app[1])
+        try:
+            app_handlers = import_object('%s.handlers.urls' % app[1])
+        except AttributeError:
+            app_handlers = []
         for spec in app_handlers:
             if isinstance(spec, tuple):
                 assert len(spec) in (2, 3)
@@ -113,8 +116,57 @@ def register_app_ui_modules(ui_modules, app_list):
 
     """
     for app in app_list:
-        app_modules = import_object('%s.handlers.ui_modules' % app)
+        try:
+            app_modules = import_object('%s.handlers.ui_modules' % app[1])
+        except AttributeError:
+            app_modules = {}
         ui_modules.update(app_modules)
+
+
+class JuneTemplateLoader(Loader):
+    def __init__(self, root_directory, app_list, **kwargs):
+        super(JuneTemplateLoader, self).__init__(root_directory, **kwargs)
+        self.app_list = app_list
+
+    def _create_template(self, name):
+        path = self._detect_template_path(name)
+        if not path:
+            raise OSError("Can't find file: %s" % name)
+        f = open(path, 'r')
+        template = Template(f.read(), name=name, loader=self)
+        f.close()
+        return template
+
+    def _detect_template_path(self, name):
+        """
+        First load template from project templates directory.
+
+        If template not in project templates directory, load from app templates
+        directories.
+
+        Directory example of an app::
+
+            app/
+                templates/
+                    appname/   <---- better with an appname
+                        layout.html
+                        screen.html
+
+        """
+        path = os.path.join(self.root, name)
+        if os.path.exists(path):
+            return path
+        for app in self.app_list:
+            app = app[1]
+            if '.' in app:
+                app_path = import_object(app).__path__[0]
+            else:
+                app_path = __import__(app).__path__[0]
+            path = os.path.join(app_path, 'templates', name)
+            if os.path.exists(path):
+                return path
+
+        return None
 
 
 class JuneApplication(web.Application):
@@ -153,6 +205,7 @@ class JuneApplication(web.Application):
             static_url_prefix=options.static_url_prefix,
 
             ui_modules=ui_modules,
+            app_list=app_list,
         ))
 
         if hasattr(options, 'autoescape'):
@@ -177,6 +230,7 @@ class JuneApplication(web.Application):
         tornado.locale.set_default_locale(options.default_locale)
 
     def load_app_static(self, handlers, app_list):
+        #TODO
         pass
 
 
@@ -195,12 +249,16 @@ class JuneHandler(web.RequestHandler):
             return self.application.cache
         return None
 
-    def get_template_path(self):
-        #TODO: try catch template
-        if self.app_template:
-            path = os.path.dirname(inspect.getfile(self.__class__))
-            return os.path.abspath(os.path.join(path, 'templates'))
-        return super(JuneHandler, self).get_template_path()
+    def create_template_loader(self, template_path):
+        settings = self.application.settings
+        if 'app_list' not in settings:
+            return super(JuneHandler,
+                         self).create_template_loader(template_path)
+        kwargs = {}
+        if 'autoescape' in settings:
+            kwargs['autoescape'] = settings['autoescape']
+        return JuneTemplateLoader(template_path, settings['app_list'],
+                                  **kwargs)
 
 
 class JsonHandler(web.RequestHandler):
