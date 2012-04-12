@@ -60,15 +60,17 @@ def register_app(app_list):
         else:
             module = __import__(app)
 
+        if hasattr(module, '__appname__'):
+            name = module.__appname__
         if hasattr(module, '__version__'):
             version = module.__version__
-        elif hasattr(module, 'version'):
-            version = module.version
-        elif hasattr(module, 'VERSION'):
-            version = module.VERSION
         else:
-            version = 'unknown'
-        logging.info("Load App: %s %s", name, version)
+            version = '1.0'
+
+        logging.info("Loading: %s (%s)", name, version)
+        if hasattr(module, 'requirements'):
+            requires = ', '.join(module.requirements)
+            logging.info("%s requires: %s", name, requires)
 
 
 def register_app_handlers(handlers, app_list):
