@@ -272,7 +272,7 @@ class JuneApplication(web.Application):
 
 
 class JuneHandler(web.RequestHandler):
-    app_template = False
+    app_template = True
 
     @property
     def db(self):
@@ -288,7 +288,7 @@ class JuneHandler(web.RequestHandler):
 
     def create_template_loader(self, template_path):
         settings = self.application.settings
-        if 'app_list' not in settings:
+        if 'app_list' not in settings or not self.app_template:
             return super(JuneHandler,
                          self).create_template_loader(template_path)
         kwargs = {}
