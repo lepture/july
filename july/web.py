@@ -40,6 +40,8 @@ if _first_run:
     define('login_url', default='/account/login', type=str,
            help='when use is not authenticated, redirect to login_url')
 
+    define('api_prefix', default='/api/', type=str)
+
     _first_run = False
 
 
@@ -123,10 +125,10 @@ def register_app_handlers(handlers, app_list):
                 else:
                     kwargs = {}
 
-                pattern = '/%s%s' % (app[0], pattern)
+                pattern = '/%s/%s' % (app[0], pattern.lstrip('/'))
                 spec = web.URLSpec(pattern, handler, kwargs)
             elif isinstance(spec, web.URLSpec):
-                pattern = '/%s%s' % (app[0], spec.regex.pattern)
+                pattern = '/%s/%s' % (app[0], spec.regex.pattern.lstrip('/'))
                 spec = web.URLSpec(pattern, app[1], spec.kwargs, spec.name)
 
             handlers.append(spec)
@@ -161,6 +163,64 @@ def register_app_ui_modules(ui_modules, app_list):
         except ImportError:
             app_modules = {}
         ui_modules.update(app_modules)
+
+
+def register_app_api(handlers, app_list):
+    """Register the app's api to handlers from app_list.
+
+    Define your app_list at your project config.py file::
+
+        app_list = [
+            ('appname', 'yourproject.yourapp'),
+            (...),
+        ]
+
+    And in yourproject/yourapp/api.py, define urls as usual. This
+    function will create the new pattern of urls for you. An example::
+
+        #: `~yourproject.yourapp.api.urls`
+        urls = [
+            ('/create', CreateHandler),  # a tuple
+        ]
+
+    Tuple and URLSpec are accepted like default tornado does. And the
+    final urls will be something like::
+
+        /api/appname/create
+    """
+    if not app_list:
+        return
+    api_prefix = options.api_prefix.rstrip('/')
+    for app in app_list:
+        try:
+            app_handlers = import_object('%s.api.urls' % app[1])
+        except AttributeError:
+            app_handlers = []
+        except ImportError:
+            app_handlers = []
+        for spec in app_handlers:
+            if isinstance(spec, tuple):
+                assert len(spec) in (2, 3)
+                pattern = spec[0]
+                handler = spec[1]
+
+                if isinstance(handler, str):
+                    handler = import_object(handler)
+
+                if len(spec) == 3:
+                    kwargs = spec[2]
+                else:
+                    kwargs = {}
+
+                pattern = '%s/%s/%s' % \
+                        (api_prefix, app[0], pattern.lstrip('/'))
+                spec = web.URLSpec(pattern, handler, kwargs)
+            elif isinstance(spec, web.URLSpec):
+                pattern = '%s/%s/%s' % \
+                        (api_prefix, app[0], spec.regex.pattern.lstrip('/'))
+                spec = web.URLSpec(pattern, app[1], spec.kwargs, spec.name)
+
+            handlers.append(spec)
 
 
 class JulyTemplateLoader(Loader):
@@ -232,6 +292,7 @@ class JulyApplication(web.Application):
         except AttributeError:
             pass
         register_app_handlers(handlers, app_list)
+        register_app_api(handlers, app_list)
 
         try:
             ui_modules = urls.ui_modules
