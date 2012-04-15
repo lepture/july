@@ -1,3 +1,3 @@
-from junetornado import JuneApplication, run_server
+from july import JulyApplication, run_server
 
-run_server(JuneApplication)
+run_server(JulyApplication)

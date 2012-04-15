@@ -2,17 +2,17 @@
 # -*- coding: utf-8 -*-
 
 from setuptools import setup
-from junetornado import __version__
+from july import __version__
 
 setup(
-    name='junetornado',
+    name='july',
     version=__version__,
     author='Hsiaoming Young',
     author_email='lepture@me.com',
     url='http://lepture.com/project/june',
-    packages=['junetornado', 'junetornado.ext'],
-    description='June Tornado: a better way to organize your tornado project',
-    scripts=['scripts/june.admin'],
+    packages=['july', 'july.ext'],
+    description='July Tornado: a better way to organize your tornado project',
+    scripts=['scripts/july'],
     install_requires=[
         'tornado',
     ],

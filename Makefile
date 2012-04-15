@@ -40,7 +40,7 @@ help:
 
 clean:
 	-rm -rf $(BUILDDIR)
-	-rm -rf junetornado.egg-info
+	-rm -rf *.egg-info
 	-rm -rf dist
 
 html:

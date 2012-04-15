@@ -1,7 +1,7 @@
 #!/usr/bin/python
-"""June Application Wrapper
+"""July Application Wrapper
 
-June Application Wrapper provides a good way to organize your tornado app
+July Application Wrapper provides a good way to organize your tornado app
 like blueprints or Django.
 
 :copyright: (c) 2012 by lepture
@@ -47,7 +47,7 @@ import logging
 from tornado import web, escape
 from tornado.util import import_object
 from tornado.template import Loader, Template
-from junetornado.util import parse_config_file
+from july.util import parse_config_file
 
 
 def register_app(app_list):
@@ -163,9 +163,9 @@ def register_app_ui_modules(ui_modules, app_list):
         ui_modules.update(app_modules)
 
 
-class JuneTemplateLoader(Loader):
+class JulyTemplateLoader(Loader):
     def __init__(self, root_directory, app_list, **kwargs):
-        super(JuneTemplateLoader, self).__init__(root_directory, **kwargs)
+        super(JulyTemplateLoader, self).__init__(root_directory, **kwargs)
         self.app_list = app_list
 
     def _create_template(self, name):
@@ -209,8 +209,8 @@ class JuneTemplateLoader(Loader):
         return None
 
 
-class JuneApplication(web.Application):
-    """June Application
+class JulyApplication(web.Application):
+    """July Application
     """
     def __init__(self, handlers=[], default_host="", transforms=None,
                  wsgi=False, **settings):
@@ -257,21 +257,21 @@ class JuneApplication(web.Application):
         if hasattr(options, 'autoescape'):
             settings['autoescape'] = options.autoescape
 
-        super(JuneApplication, self).__init__(handlers, default_host,
+        super(JulyApplication, self).__init__(handlers, default_host,
                                               transforms, wsgi, **settings)
 
         if db:
-            JuneApplication.db = db.session
+            JulyApplication.db = db.session
         else:
-            JuneApplication.db = None
-        JuneApplication.cache = cache
+            JulyApplication.db = None
+        JulyApplication.cache = cache
 
     def load_app_static(self, handlers, app_list):
         #TODO
         pass
 
 
-class JuneHandler(web.RequestHandler):
+class JulyHandler(web.RequestHandler):
     app_template = True
 
     @property
@@ -289,12 +289,12 @@ class JuneHandler(web.RequestHandler):
     def create_template_loader(self, template_path):
         settings = self.application.settings
         if 'app_list' not in settings or not self.app_template:
-            return super(JuneHandler,
+            return super(JulyHandler,
                          self).create_template_loader(template_path)
         kwargs = {}
         if 'autoescape' in settings:
             kwargs['autoescape'] = settings['autoescape']
-        return JuneTemplateLoader(template_path, settings['app_list'],
+        return JulyTemplateLoader(template_path, settings['app_list'],
                                   **kwargs)
 
 

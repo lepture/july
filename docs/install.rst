@@ -5,8 +5,8 @@ The required library is Tornado_, and an optional library is SQLAlchemy_.
 Although SQLAlchemy is optional, you should install it if you want a better solution
 for database.
 
-Tornado is a web server, and June Tornado is built on it. SQLAlchemy is a powerful database
-engine, June Tornado provides an easy way to integrate it with Tornado.
+Tornado is a web server, and July Tornado is built on it. SQLAlchemy is a powerful database
+engine, July Tornado provides an easy way to integrate it with Tornado.
 
 .. _Tornado: http://tornadoweb.org
 .. _SQLAlchemy: http://www.sqlalchemy.org
@@ -38,16 +38,16 @@ If you are on Windows, you should try **MinGW** or **Cygwin** .
 Read document of virtualenv for a better life. But you can start now with::
 
     $ mkdir ~/env
-    $ virtualenv ~/env/june
+    $ virtualenv ~/env/july
 
 When the installation is finished, active this virtual environment::
 
-    $ source ~/env/june/bin/active
+    $ source ~/env/july/bin/active
 
-Now, you are on a virtual environment called june. Any python package will be installed
-on this june environment now::
+Now, you are on a virtual environment called july. Any python package will be installed
+on this july environment now::
 
-    $ pip install junetornado
+    $ pip install july
     $ pip install SQLAlchemy
 
 
@@ -56,11 +56,11 @@ System-Wide Installation
 
 This could be easy, if you are on Linux or Mac OS X::
 
-    $ sudo pip install junetornado
+    $ sudo pip install july
 
 if no pip available::
 
-    $ sudo easy_install junetornado
+    $ sudo easy_install july
 
 
 Install from Source
@@ -68,7 +68,7 @@ Install from Source
 
 If you have git installed::
 
-    $ git clone http://github.com/lepture/junetornado.git
-    $ cd junetornado
+    $ git clone http://github.com/lepture/july.git
+    $ cd july
     $ python setup.py install
 
