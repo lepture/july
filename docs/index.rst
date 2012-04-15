@@ -1,7 +1,14 @@
-June Tornado
-==============
+July
+======
 
-Background of this project
+July is the best season for Tornado.
+
+Forward
+--------
+
+This project is born from June, it's all about how to organize a tornado project.
+
+.. todo write background of this project
 
 User's Guide
 -------------

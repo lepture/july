@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-# June Tornado documentation build configuration file, created by
+# July documentation build configuration file, created by
 # sphinx-quickstart on Wed Apr 11 20:43:29 2012.
 #
 # This file is execfile()d with the current directory set to its containing dir.
@@ -42,7 +42,7 @@ source_suffix = '.rst'
 master_doc = 'index'
 
 # General information about the project.
-project = u'June Tornado'
+project = u'July'
 copyright = u'2012, <a href="http://lepture.com">lepture</a>'
 
 # The version info for the project you're documenting, acts as replacement for
@@ -174,7 +174,7 @@ html_sidebars = {
 #html_file_suffix = None
 
 # Output file base name for HTML help builder.
-htmlhelp_basename = 'JuneTornadodoc'
+htmlhelp_basename = 'Julydoc'
 
 
 # -- Options for LaTeX output --------------------------------------------------
@@ -193,7 +193,7 @@ latex_elements = {
 # Grouping the document tree into LaTeX files. List of tuples
 # (source start file, target name, title, author, documentclass [howto/manual]).
 latex_documents = [
-  ('index', 'JuneTornado.tex', u'June Tornado Documentation',
+  ('index', 'July.tex', u'July Documentation',
    u'lepture', 'manual'),
 ]
 
@@ -223,7 +223,7 @@ latex_documents = [
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
 man_pages = [
-    ('index', 'junetornado', u'June Tornado Documentation',
+    ('index', 'july', u'July Documentation',
      [u'lepture'], 1)
 ]
 
@@ -237,8 +237,8 @@ man_pages = [
 # (source start file, target name, title, author,
 #  dir menu entry, description, category)
 texinfo_documents = [
-  ('index', 'JuneTornado', u'June Tornado Documentation',
-   u'lepture', 'JuneTornado', 'One line description of project.',
+  ('index', 'July', u'July Documentation',
+   u'lepture', 'July', 'One line description of project.',
    'Miscellaneous'),
 ]
 
