@@ -47,9 +47,9 @@ if _first_run:
 
 import logging
 from tornado import web, escape
-from tornado.util import import_object
 from tornado.template import Loader, Template
 from july.util import parse_config_file
+from july.util import import_object
 
 
 def register_app(app_list):
@@ -57,10 +57,7 @@ def register_app(app_list):
     for app in app_list:
         name = app[0]
         app = app[1]
-        if '.' in app:
-            module = import_object(app)
-        else:
-            module = __import__(app)
+        module = import_object(app)
 
         if hasattr(module, '__appname__'):
             name = module.__appname__
@@ -105,12 +102,7 @@ def register_app_handlers(handlers, app_list):
     if not app_list:
         return
     for app in app_list:
-        try:
-            app_handlers = import_object('%s.handlers.urls' % app[1])
-        except AttributeError:
-            app_handlers = []
-        except ImportError:
-            app_handlers = []
+        app_handlers = import_object('%s.handlers.urls' % app[1], [])
         for spec in app_handlers:
             if isinstance(spec, tuple):
                 assert len(spec) in (2, 3)
@@ -156,12 +148,7 @@ def register_app_ui_modules(ui_modules, app_list):
     if not app_list:
         return
     for app in app_list:
-        try:
-            app_modules = import_object('%s.handlers.ui_modules' % app[1])
-        except AttributeError:
-            app_modules = {}
-        except ImportError:
-            app_modules = {}
+        app_modules = import_object('%s.handlers.ui_modules' % app[1], {})
         ui_modules.update(app_modules)
 
 
@@ -192,12 +179,7 @@ def register_app_api(handlers, app_list):
         return
     api_prefix = options.api_prefix.rstrip('/')
     for app in app_list:
-        try:
-            app_handlers = import_object('%s.api.urls' % app[1])
-        except AttributeError:
-            app_handlers = []
-        except ImportError:
-            app_handlers = []
+        app_handlers = import_object('%s.api.urls' % app[1], [])
         for spec in app_handlers:
             if isinstance(spec, tuple):
                 assert len(spec) in (2, 3)
@@ -258,10 +240,7 @@ class JulyTemplateLoader(Loader):
             return path
         for app in self.app_list:
             app = app[1]
-            if '.' in app:
-                app_path = import_object(app).__path__[0]
-            else:
-                app_path = __import__(app).__path__[0]
+            app_path = import_object(app).__path__[0]
             path = os.path.join(app_path, 'templates', name)
             if os.path.exists(path):
                 return path
@@ -276,7 +255,8 @@ class JulyApplication(web.Application):
                  wsgi=False, **settings):
         try:
             import config
-        except ImportError:
+        except ImportError as e:
+            logging.warn(e)
             config = None
         db = getattr(config, 'db', None)
         cache = getattr(config, 'cache', None)
@@ -284,7 +264,8 @@ class JulyApplication(web.Application):
 
         try:
             import urls
-        except ImportError:
+        except ImportError as e:
+            logging.warn(e)
             urls = None
 
         try:

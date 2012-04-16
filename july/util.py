@@ -27,3 +27,19 @@ def delay_call(func, *arg, **kwargs):
     with stack_context.NullContext():
         io = ioloop.IOLoop.instance()
         io.add_callback(functools.partial(func, *arg, **kwargs))
+
+
+def import_object(name, arg=None):
+    """tornado.util.import_object replacement for july project
+
+    .. attention:: you should not use this function
+    """
+
+    if '.' not in name:
+        return __import__(name)
+    parts = name.split('.')
+    try:
+        obj = __import__('.'.join(parts[:-1]), None, None, [parts[-1]], 0)
+    except ImportError:
+        obj = None
+    return getattr(obj, parts[-1], arg)
