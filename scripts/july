@@ -1,9 +1,47 @@
 #!/usr/bin/python
 import argparse
+import os
 
 
-def startproject():
-    pass
+def startproject(name):
+    """Project sturecture::
+
+        name/
+            setup.py
+            name/
+                __init__.py
+                app.py
+                config.py
+                handlers.py
+                static/
+                templates/
+    """
+    os.makedirs('%s/%s/static' % (name, name))
+    os.makedirs('%s/%s/templates' % (name, name))
+
+    f = open('%s/setup.py' % name, 'w')
+    f.write('')
+    f.close()
+
+    f = open('%s/%s/app.py' % (name, name), 'w')
+    f.write(
+        '#!/usr/bin/env python\n'
+        '# -*- coding: utf-8 -*-\n\n'
+
+        'from july import JulyApplication, run_server\n\n'
+        'run_server(JulyApplication)\n')
+    f.close()
+
+    f = open('%s/%s/config.py' % (name, name), 'w')
+    f.write(
+        '#: db = SQLAlchemy()\n'
+        'app_list = []\n'
+    )
+    f.close()
+
+    f = open('%s/%s/handlers.py' % (name, name), 'w')
+    f.write('')
+    f.close()
 
 
 def startapp():
@@ -16,11 +54,17 @@ def createdb():
 
 def main():
     parser = argparse.ArgumentParser(
-        prog='june.admin',
-        description=('June Tornado is a better way to organize your tornado'
-                     'project')
+        prog='july',
+        description=('July is a better way to organize your tornado project')
     )
     parser.add_argument('command', nargs='*')
+
+    args = parser.parse_args()
+    if args.command:
+        command = args.command[0]
+        if command == 'startproject':
+            startproject(args.command[1])
+    print args.command
     print 'hello world'
 
 

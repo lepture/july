@@ -1,5 +1,4 @@
-
-from july import JulyHandler
+from july import JulyHandler, JulyApp
 
 
 class HomeHandler(JulyHandler):
@@ -7,6 +6,9 @@ class HomeHandler(JulyHandler):
         self.render('myapp/home.html')
 
 
-urls = [
+handlers = [
     ('/', HomeHandler),
 ]
+
+myapp = JulyApp('myapp', __name__, handlers=handlers,
+                template_folder="templates")
