@@ -14,6 +14,6 @@ handlers = [
 ]
 
 app = JulyApplication(handlers=handlers, debug=True)
-app.register_app(myapp, url_prefix='app')
+app.register_app(myapp, url_prefix='/app')
 
 run_server(app)

@@ -6,6 +6,9 @@ __all__ = ["JulyHandler", "ApiHandler", "UIModule", "run_server"]
 
 class JulyHandler(web.RequestHandler):
     """July Handler
+
+    Subclass JulyHandler to make an app, it provides a way to organize a July
+    App, and will support more features in the future.
     """
     app_template = True
 
@@ -85,5 +88,5 @@ def run_server(app):
         tornado.locale.load_translations(options.locale_path)
         tornado.locale.set_default_locale(options.default_locale)
 
-    logging.info('Start server at 0.0.0.0:%s' % options.port)
+    logging.info('Start server at %s:%s' % (options.address, options.port))
     ioloop.IOLoop.instance().start()

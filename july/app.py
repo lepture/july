@@ -7,6 +7,52 @@ __all__ = ["JulyApp", "JulyApplication"]
 
 
 class JulyApp(object):
+    """July App
+
+    July App is like BluePrint in Flask, it splits a tornado project into
+    several apps.
+
+    The basic usage, consider your app as::
+
+        myapp/
+            __init__.py
+            handlers.py
+
+    And in your ``~myapp.handlers`` define::
+
+        class MyHandler(RequestHandler):
+            def get(self):
+                self.write('hello july app')
+
+        handlers = [
+            ('/', MyHandler),
+        ]
+
+        app = JulyApp('a readable name', __name__, handlers=handlers)
+
+        # you may also add a handler by ``app.add_handler``
+        # app.add_handler(('/', MyHandler))
+
+    .. admonition::
+
+        You should always define an app in the same module level of your
+        handlers. And it is suggested that you use ``__name__`` all the time.
+
+    :param template_folder:
+
+        the folder name for templates in your app, for example, in your app::
+
+            myapp/
+                __init__.py
+                handlers.py
+                templates/
+
+        so that template_folder is ``templates``. And you can define your app
+        with app template supports::
+
+            app = JulyApp('name', __name__, template_folder='templates')
+
+    """
     _first_register = True
 
     def __init__(self, name, import_name, template_folder=None,
@@ -22,6 +68,9 @@ class JulyApp(object):
         else:
             self.template_path = None
 
+    def add_handler(self, handler):
+        self.handlers.append(handler)
+
     def first_register(self):
         if not self._first_register:
             return False
@@ -32,6 +81,28 @@ class JulyApp(object):
 
 class JulyApplication(object):
     """July Application
+
+    This is a wrapper for ``tornado.web.Application``.
+    You define a JulyApplication::
+
+        application = JulyApplication()
+
+    and when this application is called, it creates a
+    ``tornado.web.Application``, which means, application() is somewhat a
+    ``tornado.web.Application()``.
+
+    so, you can do more with application before it is called.
+
+    The most useful task for JulyApplication is registering a July App.
+    Define you July App, and register it to your application::
+
+        simple_app = JulyApp('name', __name__, handlers=handlers)
+        application.register_app(simple_app)
+
+    And start your application::
+
+        application().listen(8888)
+        ioloop.IOLoop.instance().start()
     """
 
     def __init__(self, handlers=None, default_host="", transforms=None,
@@ -66,10 +137,10 @@ class JulyApplication(object):
                 else:
                     kwargs = {}
 
-                pattern = '/%s%s' % (url_prefix, pattern)
+                pattern = '%s%s' % (url_prefix, pattern)
                 spec = URLSpec(pattern, handler, kwargs)
             elif isinstance(spec, URLSpec):
-                pattern = '/%s%s' % (url_prefix, spec.regex.pattern)
+                pattern = '%s%s' % (url_prefix, spec.regex.pattern)
                 spec = URLSpec(pattern, spec.handler_class,
                                spec.kwargs, spec.name)
 

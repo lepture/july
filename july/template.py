@@ -3,6 +3,9 @@ from tornado.template import Loader, Template
 
 
 class JulyTemplateLoader(Loader):
+    """July Template Loader
+    """
+
     def __init__(self, root_directory, app, **kwargs):
         super(JulyTemplateLoader, self).__init__(root_directory, **kwargs)
         self.app = app
