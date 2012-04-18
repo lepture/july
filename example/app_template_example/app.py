@@ -13,7 +13,7 @@ handlers = [
     ('/', HomeHandler),
 ]
 
-app = JulyApplication(handlers=handlers, debug=True)
-app.register_app(myapp, url_prefix='/app')
+application = JulyApplication(handlers=handlers, debug=True)
+application.register_app(myapp, url_prefix='/app')
 
-run_server(app)
+run_server(application)
