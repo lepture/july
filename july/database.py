@@ -2,8 +2,6 @@
 # -*- coding: utf-8 -*-
 
 import random
-from sqlalchemy import Column
-from sqlalchemy import Integer
 from sqlalchemy import create_engine
 from sqlalchemy.orm import scoped_session, sessionmaker
 from sqlalchemy.orm import Query
@@ -14,14 +12,12 @@ from sqlalchemy.orm.util import _entity_descriptor
 from sqlalchemy.util import to_list
 from sqlalchemy.sql import operators, extract
 from tornado.ioloop import PeriodicCallback
-
-"""
-DjangoQuery From
-https://github.com/mitsuhiko/sqlalchemy-django-query
-"""
+from tornado.options import options
+from july.util import import_object
 
 
 class DjangoQuery(Query):
+    #: https://github.com/mitsuhiko/sqlalchemy-django-query
     """Can be mixed into any Query class of SQLAlchemy and extends it to
     implements more Django like behavior:
 
@@ -131,7 +127,8 @@ class DjangoQuery(Query):
 
 
 class Model(object):
-    id = Column(Integer, primary_key=True)  # primary key
+    #: id = Column(Integer, primary_key=True)
+
     query = None
 
     @declared_attr
@@ -147,52 +144,46 @@ class Model(object):
             setattr(self, k, v)
 
 
-def create_session(engine):
-    if not engine:
-        return None
-    session = sessionmaker(bind=engine, query_cls=DjangoQuery)
-    return scoped_session(session)
+def create_session(engine, **kwargs):
+    if isinstance(engine, basestring):
+        engine = create_engine(engine, **kwargs)
+    return scoped_session(sessionmaker(bind=engine, query_cls=DjangoQuery))
 
 
 class SQLAlchemy(object):
     """SQLAlchemy Wrapper, with Django-like filter_by and order_by
-
-    Basic usage example::
-
-        db = SQLAlchemy("mysql://user:pass@host:port/db", pool_recycle=3600)
-
-        from sqlalchemy import Column, String
-
-        class User(db.Model):
-            username = Column(String(16), unique=True, nullable=False)
-            password = Column(String(30), nullable=False)
-
-        >>> User.query.filter_by(username='yourname')
-
     """
+
     def __init__(self, master, slaves=None, **kwargs):
         self.engine = create_engine(master, **kwargs)
-        self.session = create_session(self.engine)
+
+        self.master = create_session(self.engine)
 
         self.slaves = {}
         if isinstance(slaves, basestring):
-            self.slaves['default'] = create_engine(slaves, **kwargs)
+            self.slaves['default'] = create_session(slaves, **kwargs)
 
         if isinstance(slaves, dict):
             for key, value in slaves.items():
-                self.slaves[key] = create_engine(value, **kwargs)
+                self.slaves[key] = create_session(value, **kwargs)
 
-        if 'pool_recycle' in kwargs:
+        if 'model_cls' in kwargs:
+            self._model_cls = import_object(kwargs['model_cls'])
+        else:
+            self._model_cls = Model
+
+        if 'pool_recycle' in kwargs and 'ping_db' in kwargs:
             # ping db, so that mysql won't goaway
-            PeriodicCallback(self._ping_db,
-                             kwargs['pool_recycle'] * 1000).start()
+            time = kwargs['pool_recycle'] * 1000
+            PeriodicCallback(self._ping_db, time).start()
 
     @property
     def Model(self):
         if hasattr(self, '_base'):
             return self._base
-        base = declarative_base(cls=Model, name='Model')
-        base.query = self.session.query_property()
+
+        base = declarative_base(cls=self._model_cls, name='Model')
+        base.query = self.master.query_property()
         if self.slaves:
             base.slave = self._slave_query
         else:
@@ -206,9 +197,33 @@ class SQLAlchemy(object):
         return slave.query_property()
 
     def _ping_db(self):
-        self.session.execute('show variables')
+        self.master.execute('show variables')
         for key, slave in self.slaves.items():
             slave.execute('show variables')
 
-    def create_db(self):
-        self.Model.metadata.create_all(self.engine)
+    @classmethod
+    def create_instance(cls, master, slaves=None, **kwargs):
+        """create single instance SQLAlchemy"""
+        if hasattr(cls, '_instance'):
+            return cls._instance
+        cls._instance = cls(master, slaves, **kwargs)
+        return cls._instance
+
+
+"""
+db.master.add(model)
+db.slaves[key].add(model)
+"""
+db = SQLAlchemy.create_instance(
+    #: string like
+    #: mysql://user:pass@host:port/db?charset=utf8
+    options.sqlalchemy_master,
+
+    #: dictionary
+    #: {'july': 'mysql://user:pass@host:port/db?charset=utf8'}
+    options.sqlalchemy_slaves,
+
+    #: dictionary like
+    #: {'pool_recycle': 3600, 'ping_db': True}
+    options.sqlalchemy_kwargs,
+)
