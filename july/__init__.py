@@ -29,21 +29,11 @@ from tornado.options import define
 _first_run = True
 if _first_run:
     #: server configuration
-    define('debug', default=True, type=bool, help='show debug information')
     define('address', default='', type=str, help='run server at this address')
     define('port', default=8000, type=int, help='run server on this port')
     define('settings', default='', type=str, help='setting file path')
 
     #: application settings
-    define('template_path', type=str,
-           help='absolute path of template directory')
-    define('static_path', type=str, help='absolute path of static directory')
-    define('static_url_prefix', default='/static/', type=str)
-    define('xsrf_cookies', default=False, type=bool)
-    define('cookie_secret', type=str)
-    define('login_url', default='/account/login', type=str,
-           help='when use is not authenticated, redirect to login_url')
-
     define('locale_path', type=str, help='absolute path of locale directory')
     define('default_locale', default='en_US', type=str)
     define('enable_app_static', default=True, type=bool)

@@ -115,10 +115,10 @@ class JulyApplication(object):
 
     def register_app(self, app, url_prefix=''):
         if app.first_register():
-            if 'app_list' not in self.settings:
-                self.settings['app_list'] = {}
+            if '__july_apps__' not in self.settings:
+                self.settings['__july_apps__'] = {}
 
-            self.settings['app_list'][app.import_name] = app
+            self.settings['__july_apps__'][app.import_name] = app
             self.register_app_handlers(app, url_prefix)
             self.register_app_ui_modules(app)
 
@@ -144,18 +144,18 @@ class JulyApplication(object):
                 spec = URLSpec(pattern, spec.handler_class,
                                spec.kwargs, spec.name)
 
-            self.register_handler(spec)
+            self.add_handler(spec)
 
     def register_app_ui_modules(self, app):
-        self.register_ui_moudle(app.ui_modules)
+        self.add_ui_moudle(app.ui_modules)
 
-    def register_handler(self, handler):
+    def add_handler(self, handler):
         if not self.handlers:
             self.handlers = []
 
         self.handlers.append(handler)
 
-    def register_ui_moudle(self, ui_module):
+    def add_ui_moudle(self, ui_module):
         if 'ui_modules' not in self.settings:
             self.settings['ui_modules'] = {}
 

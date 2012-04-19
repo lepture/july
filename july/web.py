@@ -26,8 +26,8 @@ class JulyHandler(web.RequestHandler):
 
     def create_template_loader(self, template_path):
         settings = self.settings
-        if 'app_list' in settings and self.app_template:
-            app = settings['app_list'].get(self.__module__, None)
+        if '__july_apps__' in settings and self.app_template:
+            app = settings['__july_apps__'].get(self.__module__, None)
             if app:
                 kwargs = {}
                 if 'autoescape' in settings:

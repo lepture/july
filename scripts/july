@@ -6,6 +6,8 @@ import os
 PROJECT_APP_PY = """#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+import os.path
+ROOT = os.path.abspath(os.path.dirname(__file__))
 from july import JulyApplication, run_server
 
 #: define a demo handler for you
@@ -22,7 +24,19 @@ handlers = [
     ('/', HomeHandler),
 ]
 
-application = JulyApplication(handlers=handlers, debug=True)
+
+settings = dict(
+    cookie_secret='secret',
+    xsrf_cookies='secret',
+    login_url='/account/login',
+
+    template_path=os.path.join(ROOT, 'templates'),
+    static_path=os.path.join(ROOT, 'static'),
+    static_url_prefix='/static/',
+)
+
+application = JulyApplication(handlers=handlers, debug=True, **settings)
+
 #: you can add a handler later
 #: application = JulyApplication(debug=True)
 #: application.add_handler(('/', HomeHandler))
