@@ -34,21 +34,18 @@ if _first_run:
     define('port', default=8000, type=int, help='run server on this port')
     define('settings', default='', type=str, help='setting file path')
 
-    #: application configuration
+    #: application settings
     define('template_path', type=str,
            help='absolute path of template directory')
     define('static_path', type=str, help='absolute path of static directory')
     define('static_url_prefix', default='/static/', type=str)
-    define('enable_app_static', default=True, type=bool)
     define('xsrf_cookies', default=False, type=bool)
     define('cookie_secret', type=str)
-
-    define('locale_path', type=str, help='absolute path of locale directory')
-    define('default_locale', default='en_US', type=str)
-
     define('login_url', default='/account/login', type=str,
            help='when use is not authenticated, redirect to login_url')
 
-    define('api_prefix', default='/api/', type=str)
+    define('locale_path', type=str, help='absolute path of locale directory')
+    define('default_locale', default='en_US', type=str)
+    define('enable_app_static', default=True, type=bool)
 
     _first_run = False

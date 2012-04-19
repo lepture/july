@@ -3,49 +3,104 @@ import argparse
 import os
 
 
+PROJECT_APP_PY = """#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
+from july import JulyApplication, run_server
+
+#: define a demo handler for you
+#: delete it as your wish
+from tornado.web import RequestHandler
+
+
+class HomeHandler(RequestHandler):
+    def get(self):
+        self.write('hello july project')
+
+
+handlers = [
+    ('/', HomeHandler),
+]
+
+application = JulyApplication(handlers=handlers, debug=True)
+#: you can add a handler later
+#: application = JulyApplication(debug=True)
+#: application.add_handler(('/', HomeHandler))
+
+#: register an app
+#: from myapp.handlers import myapp
+#: application.register_app(myapp, url_prefix='/app')
+
+if __name__ == '__main__':
+    run_server(application)
+"""
+
+
+APP_HANDLERS_PY = """# -*- coding: utf-8 -*-
+from july import JulyHandler, JulyApp
+
+
+class HomeHandler(JulyHandler):
+    #: if you don't want to load template from in app
+    #: app_template = False
+
+    def get(self):
+        self.write('hello july app')
+
+        #: render from in app template
+        #: self.render('myapp/home.html')
+
+
+handlers = [
+    ('/', HomeHandler),
+]
+
+myapp = JulyApp('myapp', __name__, handlers=handlers,
+                template_folder="templates")
+
+#: you can add handler later by
+#: myapp.add_handler(('/', HomeHandler))
+"""
+
+
 def startproject(name):
-    """Project sturecture::
+    """Project structure::
 
         name/
-            setup.py
-            name/
-                __init__.py
-                app.py
-                config.py
-                handlers.py
-                static/
-                templates/
+            __init__.py
+            app.py
+            static/
+            templates/
     """
-    os.makedirs('%s/%s/static' % (name, name))
-    os.makedirs('%s/%s/templates' % (name, name))
+    os.makedirs('%s/static' % name)
+    os.makedirs('%s/templates' % name)
 
-    f = open('%s/setup.py' % name, 'w')
+    f = open('%s/__init__.py' % name, 'w')
     f.write('')
     f.close()
 
-    f = open('%s/%s/app.py' % (name, name), 'w')
-    f.write(
-        '#!/usr/bin/env python\n'
-        '# -*- coding: utf-8 -*-\n\n'
-
-        'from july import JulyApplication, run_server\n\n'
-        'run_server(JulyApplication)\n')
+    f = open('%s/app.py' % name, 'w')
+    f.write(PROJECT_APP_PY)
     f.close()
 
-    f = open('%s/%s/config.py' % (name, name), 'w')
-    f.write(
-        '#: db = SQLAlchemy()\n'
-        'app_list = []\n'
-    )
-    f.close()
 
-    f = open('%s/%s/handlers.py' % (name, name), 'w')
+def startapp(name):
+    """App structure::
+
+        name/
+            __init__.py
+            handlers.py
+            templates/
+    """
+    os.makedirs('%s/templates' % name)
+
+    f = open('%s/__init__.py' % name, 'w')
     f.write('')
     f.close()
 
-
-def startapp():
-    pass
+    f = open('%s/handlers.py' % name, 'w')
+    f.write(APP_HANDLERS_PY)
+    f.close()
 
 
 def createdb():
@@ -64,8 +119,8 @@ def main():
         command = args.command[0]
         if command == 'startproject':
             startproject(args.command[1])
-    print args.command
-    print 'hello world'
+        elif command == 'startapp':
+            startapp(args.command[1])
 
 
 if __name__ == '__main__':
