@@ -9,6 +9,14 @@ class JulyHandler(web.RequestHandler):
 
     Subclass JulyHandler to make an app, it provides a way to organize a July
     App, and will support more features in the future.
+
+    If you don't want the in app template feature, set app_template=False::
+
+        class HomeHandler(JulyHandler):
+            app_template = False
+
+            def get(self):
+                self.write('hello world')
     """
     app_template = True
 
@@ -24,17 +32,42 @@ class JulyHandler(web.RequestHandler):
             return self.application.cache
         return None
 
-    def create_template_loader(self, template_path):
-        settings = self.settings
-        if '__july_apps__' in settings and self.app_template:
-            app = settings['__july_apps__'].get(self.__module__, None)
-            if app:
-                kwargs = {}
-                if 'autoescape' in settings:
-                    kwargs['autoescape'] = settings['autoescape']
+    def _get_app(self):
+        if hasattr(self, '_july_app'):
+            return self._july_app
+        if '__july_apps__' in self.settings:
+            app = self.settings['__july_apps__'].get(self.__module__, None)
+            self._july_app = app
 
-                return JulyTemplateLoader(template_path, app, **kwargs)
+        self._july_app = None
+        return self._july_app
+
+    def create_template_loader(self, template_path):
+        app = self._get_app()
+        if app and self.app_template:
+            kwargs = {}
+            if 'autoescape' in self.settings:
+                kwargs['autoescape'] = self.settings['autoescape']
+
+            return JulyTemplateLoader(template_path, app, **kwargs)
         return super(JulyHandler, self).create_template_loader(template_path)
+
+    def render_string(self, template_name, **kwargs):
+        #: add application filters
+        if '__july_filters__' in self.settings:
+            kwargs.update(self.settings['__july_filters__'])
+
+        #: add application global variables
+        if '__july_global__' in self.settings:
+            assert "g" not in kwargs, "g is a reserved keyword."
+            kwargs["g"] = self.settings['__july_global__']
+
+        #: add app filters
+        app = self._get_app()
+        if app and '__july_filters__' in app.settings:
+            kwargs.update(app.settings['__july_filters__'])
+
+        return super(JulyHandler, self).render_string(template_name, **kwargs)
 
 
 class ApiHandler(web.RequestHandler):

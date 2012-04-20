@@ -1,6 +1,6 @@
 import os.path
 from tornado.web import Application, URLSpec
-from july.util import get_root_path, import_object
+from july.util import get_root_path, import_object, ObjectDict
 
 
 __all__ = ["JulyApp", "JulyApplication"]
@@ -18,7 +18,7 @@ class JulyApp(object):
             __init__.py
             handlers.py
 
-    And in your ``~myapp.handlers`` define::
+    And in your ``myapp.handlers`` define::
 
         class MyHandler(RequestHandler):
             def get(self):
@@ -56,11 +56,12 @@ class JulyApp(object):
     _first_register = True
 
     def __init__(self, name, import_name, template_folder=None,
-                 handlers=[], ui_modules={}):
+                 handlers=[], ui_modules={}, **settings):
         self.name = name
         self.import_name = import_name
         self.handlers = handlers
         self.ui_modules = ui_modules
+        self.settings = settings
         self.root_path = get_root_path(self.import_name)
 
         if template_folder:
@@ -70,6 +71,16 @@ class JulyApp(object):
 
     def add_handler(self, handler):
         self.handlers.append(handler)
+
+    def register_filter(self, name, func):
+        """Register filter function for template.
+
+        .. admonition:: this filter can only be accessed in this app.
+        """
+        if '__july_filters__' not in self.settings:
+            self.settings['__july_filters__'] = {}
+
+        self.settings['__july_filters__'].update({name: func})
 
     def first_register(self):
         if not self._first_register:
@@ -113,16 +124,62 @@ class JulyApplication(object):
         self.wsgi = wsgi
         self.settings = settings
 
+    def add_handler(self, handler):
+        if not self.handlers:
+            self.handlers = []
+
+        self.handlers.append(handler)
+
+    def add_ui_moudle(self, ui_module):
+        if 'ui_modules' not in self.settings:
+            self.settings['ui_modules'] = {}
+
+        self.settings['ui_modules'].update(ui_module)
+
+    def register_filter(self, name, func):
+        """Register filter function for template::
+
+            application = JulyApplication()
+            application.register_filter('name', function)
+
+        And it will be available in template::
+
+            {{ name(var) }}
+
+        The registered function can be accessed in all JulyHanlder
+        subclass.
+        """
+        if '__july_filters__' not in self.settings:
+            self.settings['__july_filters__'] = {}
+
+        self.settings['__july_filters__'].update({name: func})
+
+    def register_context(self, key, value):
+        """Register global variables for template::
+
+            application = JulyApplication()
+            application.register_global('key', value)
+
+        And it will be available in template::
+
+            {{ g.key }}
+
+        """
+        if '__july_global__' not in self.settings:
+            self.settings['__july_global__'] = ObjectDict()
+
+        self.settings['__july_global__'][key] = value
+
     def register_app(self, app, url_prefix=''):
         if app.first_register():
             if '__july_apps__' not in self.settings:
                 self.settings['__july_apps__'] = {}
 
             self.settings['__july_apps__'][app.import_name] = app
-            self.register_app_handlers(app, url_prefix)
-            self.register_app_ui_modules(app)
+            self._register_app_handlers(app, url_prefix)
+            self._register_app_ui_modules(app)
 
-    def register_app_handlers(self, app, url_prefix):
+    def _register_app_handlers(self, app, url_prefix):
         for spec in app.handlers:
             if isinstance(spec, tuple):
                 assert len(spec) in (2, 3)
@@ -146,20 +203,8 @@ class JulyApplication(object):
 
             self.add_handler(spec)
 
-    def register_app_ui_modules(self, app):
+    def _register_app_ui_modules(self, app):
         self.add_ui_moudle(app.ui_modules)
-
-    def add_handler(self, handler):
-        if not self.handlers:
-            self.handlers = []
-
-        self.handlers.append(handler)
-
-    def add_ui_moudle(self, ui_module):
-        if 'ui_modules' not in self.settings:
-            self.settings['ui_modules'] = {}
-
-        self.settings['ui_modules'].update(ui_module)
 
     def __call__(self):
         app = Application(self.handlers, self.default_host, self.transforms,
