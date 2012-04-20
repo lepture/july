@@ -188,7 +188,9 @@ class SQLAlchemy(object):
             base.slave = self._slave_query
         else:
             base.slave = lambda key=None: base.query
-        return base
+
+        self._base = base
+        return self._base
 
     def _slave_query(self, key=None):
         if key and key in self.slaves:
@@ -202,7 +204,7 @@ class SQLAlchemy(object):
             slave.execute('show variables')
 
     @classmethod
-    def create_instance(cls, master, slaves=None, **kwargs):
+    def create_instance(cls, master, slaves=None, kwargs={}):
         """create single instance SQLAlchemy"""
         if hasattr(cls, '_instance'):
             return cls._instance
