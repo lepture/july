@@ -1,7 +1,7 @@
 from tornado import web, escape
 from july.template import JulyTemplateLoader
 
-__all__ = ["JulyHandler", "ApiHandler", "UIModule", "run_server"]
+__all__ = ["JulyHandler", "ApiHandler", "run_server"]
 
 
 class JulyHandler(web.RequestHandler):
@@ -19,18 +19,6 @@ class JulyHandler(web.RequestHandler):
                 self.write('hello world')
     """
     app_template = True
-
-    @property
-    def db(self):
-        if hasattr(self.application, 'db'):
-            return self.application.db
-        return None
-
-    @property
-    def cache(self):
-        if hasattr(self.application, 'cache'):
-            return self.application.cache
-        return None
 
     def _get_app(self):
         if hasattr(self, '_july_app'):
@@ -91,16 +79,6 @@ class ApiHandler(web.RequestHandler):
                 self.set_header("Content-Type",
                                 "application/javascript; charset=UTF-8")
         super(ApiHandler, self).write(chunk)
-
-
-class UIModule(web.UIModule):
-    @property
-    def db(self):
-        return self.handler.db
-
-    @property
-    def cache(self):
-        return self.handler.cache
 
 
 def run_server(app):

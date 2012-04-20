@@ -14,7 +14,6 @@ os.environ["PYTHON_EGG_CACHE"] = "/tmp/egg"
 
 #: library
 from july.web import JulyHandler, ApiHandler
-from july.web import UIModule
 from july.web import run_server
 from july.app import JulyApp, JulyApplication
 
