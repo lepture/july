@@ -86,12 +86,7 @@ def run_server(app):
     import tornado.locale
     from tornado import httpserver, ioloop
     from tornado.options import options, parse_command_line
-    from july.util import parse_config_file
-
     parse_command_line()
-    if options.settings:
-        parse_config_file(options.settings)
-
     server = httpserver.HTTPServer(app(), xheaders=True)
     server.listen(int(options.port), options.address)
 

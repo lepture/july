@@ -18,7 +18,7 @@ from july.web import run_server
 from july.app import JulyApp, JulyApplication
 
 
-__version__ = '0.1'
+__version__ = '1.0.0'
 __author__ = 'Hsiaoming Young'
 
 
@@ -36,5 +36,11 @@ if _first_run:
     define('locale_path', type=str, help='absolute path of locale directory')
     define('default_locale', default='en_US', type=str)
     define('enable_app_static', default=True, type=bool)
+
+    #: sqlalchemy default configuration
+    define('sqlalchemy_master', type=str, help='master databse')
+    define('sqlalchemy_slaves', default={}, type=dict, help='slave databses')
+    define('sqlalchemy_kwargs', default={}, type=dict,
+           help='sqlalchemy extra params')
 
     _first_run = False

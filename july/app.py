@@ -38,6 +38,8 @@ class JulyApp(object):
         You should always define an app in the same module level of your
         handlers. And it is suggested that you use ``__name__`` all the time.
 
+    :param name: human readable name for the app
+
     :param template_folder:
 
         the folder name for templates in your app, for example, in your app::
@@ -98,9 +100,8 @@ class JulyApplication(object):
 
         application = JulyApplication()
 
-    and when this application is called, it creates a
-    ``tornado.web.Application``, which means, application() is somewhat a
-    ``tornado.web.Application()``.
+    and when this application is called, it creates a tornado.web.Application,
+    which means, JulyApplication()() equals to tornado.web.Application().
 
     so, you can do more with application before it is called.
 
