@@ -172,7 +172,7 @@ class SQLAlchemy(object):
         else:
             self._model_cls = Model
 
-        if 'pool_recycle' in kwargs and 'ping_db' in kwargs:
+        if 'pool_recycle' in kwargs:
             # ping db, so that mysql won't goaway
             time = kwargs['pool_recycle'] * 1000
             PeriodicCallback(self._ping_db, time).start()
@@ -226,6 +226,6 @@ db = SQLAlchemy.create_instance(
     options.sqlalchemy_slaves,
 
     #: dictionary like
-    #: {'pool_recycle': 3600, 'ping_db': True}
+    #: {'pool_recycle': 3600}
     options.sqlalchemy_kwargs,
 )
