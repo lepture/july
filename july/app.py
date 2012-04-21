@@ -58,7 +58,7 @@ class JulyApp(object):
     _first_register = True
 
     def __init__(self, name, import_name, template_folder=None,
-                 handlers=[], ui_modules={}, **settings):
+                 handlers=None, ui_modules=None, **settings):
         self.name = name
         self.import_name = import_name
         self.handlers = handlers
@@ -72,7 +72,10 @@ class JulyApp(object):
             self.template_path = None
 
     def add_handler(self, handler):
-        self.handlers.append(handler)
+        if self.handlers is None:
+            self.handlers = [handler]
+        else:
+            self.handlers.append(handler)
 
     def register_filter(self, name, func):
         """Register filter function for template.
@@ -135,7 +138,8 @@ class JulyApplication(object):
         if 'ui_modules' not in self.settings:
             self.settings['ui_modules'] = {}
 
-        self.settings['ui_modules'].update(ui_module)
+        if ui_module:
+            self.settings['ui_modules'].update(ui_module)
 
     def register_filter(self, name, func):
         """Register filter function for template::
@@ -181,6 +185,8 @@ class JulyApplication(object):
             self._register_app_ui_modules(app)
 
     def _register_app_handlers(self, app, url_prefix):
+        if not app.handlers:
+            return
         for spec in app.handlers:
             if isinstance(spec, tuple):
                 assert len(spec) in (2, 3)
