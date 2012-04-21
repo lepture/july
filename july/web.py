@@ -26,8 +26,8 @@ class JulyHandler(web.RequestHandler):
         if '__july_apps__' in self.settings:
             app = self.settings['__july_apps__'].get(self.__module__, None)
             self._july_app = app
-
-        self._july_app = None
+        else:
+            self._july_app = None
         return self._july_app
 
     def create_template_loader(self, template_path):

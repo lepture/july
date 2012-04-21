@@ -1,0 +1,19 @@
+<!DOCTYPE HTML>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <title>Blog</title>
+    </head>
+    <body>
+        <div>
+            <a href="/post/create">Create</a>
+        </div>
+
+        {% for post in posts%}
+        <article>
+            <h2><a href="{{reverse_url('post', post.id)}}">{{post.title}}</a></h2>
+            <div>{{post.content}}</div>
+        </article>
+        {% end %}
+    </body>
+</html>

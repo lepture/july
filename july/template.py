@@ -13,7 +13,7 @@ class JulyTemplateLoader(Loader):
     def _create_template(self, name):
         path = self._detect_template_path(name)
         if not path:
-            raise OSError("Can't find file: %s" % name)
+            raise IOError("Can't find file: %s" % name)
         f = open(path, 'r')
         template = Template(f.read(), name=name, loader=self)
         f.close()
