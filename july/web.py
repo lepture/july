@@ -65,6 +65,8 @@ class JulyHandler(web.RequestHandler):
         if msg is None:
             messages = cache.get(key)
             cache.delete(key)
+            if messages is None:
+                messages = []
             return messages
         message = (type, msg)
         messages = cache.get(key)
