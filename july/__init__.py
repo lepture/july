@@ -28,7 +28,8 @@ from tornado.options import define
 _first_run = True
 if _first_run:
     #: server configuration
-    define('address', default='', type=str, help='run server at this address')
+    define('address', default='127.0.0.1', type=str,
+           help='run server at this address')
     define('port', default=8000, type=int, help='run server on this port')
     define('settings', default='', type=str, help='setting file path')
 

@@ -41,7 +41,12 @@ class JulyHandler(web.RequestHandler):
             return JulyTemplateLoader(template_path, app, **kwargs)
         return super(JulyHandler, self).create_template_loader(template_path)
 
-    def flash_message(self, msg=None, type='info'):
+    def on_finish(self):
+        #: clear flash message
+        key = '%s_flash_message' % self.xsrf_token
+        cache.delete(key)
+
+    def flash_message(self, msg=None, category=None):
         """flash_message provide an easy way to communicate with users.
 
         create message in your handler::
@@ -54,21 +59,26 @@ class JulyHandler(web.RequestHandler):
         and get messages in ``home.html``::
 
             <ul>
-                {% for type, message in flash_message() $}
-                <li>{{type}}: {{message}}</li>
+                {% for category, message in flash_message() $}
+                <li>{{category}}: {{message}}</li>
                 {% end %}
             </ul>
         """
+        def get_category_message(messages, category):
+            for cat, msg in messages:
+                if cat == category:
+                    yield (cat, msg)
+
         #: use xsrf token or not ?
-        token = self.xsrf_token
-        key = '%s_flash_message' % token
+        key = '%s_flash_message' % self.xsrf_token
         if msg is None:
             messages = cache.get(key)
-            cache.delete(key)
             if messages is None:
-                messages = []
+                return []
+            if category is not None:
+                return get_category_message(messages, category)
             return messages
-        message = (type, msg)
+        message = (category, msg)
         messages = cache.get(key)
         if isinstance(messages, list):
             messages.append(message)
