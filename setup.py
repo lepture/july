@@ -2,14 +2,14 @@
 # -*- coding: utf-8 -*-
 
 from setuptools import setup
-from july import __version__
+from july import __version__, __author__
 
 setup(
     name='july',
     version=__version__,
-    author='Hsiaoming Young',
+    author=__author__,
     author_email='lepture@me.com',
-    url='http://lepture.com/project/june',
+    url='http://lepture.com/project/july/',
     packages=['july', 'july.ext'],
     description='July Tornado: a better way to organize your tornado project',
     scripts=['scripts/july'],

@@ -1,6 +1,12 @@
 # -*- coding: utf-8 -*-
 
-"""July Tornado
+"""July
+
+July is the best season for tornado, it provides a better way to
+organize your tornado projects.
+
+:license: BSD
+:copyright: (c) 2012 - now, Hsiaoming Young
 """
 
 import os
