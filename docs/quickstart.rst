@@ -1,114 +1,81 @@
-Quick Start
+.. _quickstart:
+
+Quickstart
 ===========
 
-
-Create a Project
-----------------
-
-You can easily create a project::
-
-    july startproject PROJECT_NAME
+This section assumes you already have July installed. If you do not,
+head over to the :ref:`installation` section.
 
 
-This will create the folder structure of july project for you::
+A Minimal Application
+----------------------
 
-    PROJECT_NAME/
-        setup.py
-        PROJECT_NAME/
-            __init__.py
-            app.py
-            static/
-            templates/
+A minimal July application looks something like this::
+
+    from july import JulyHandler, JulyApplication
 
 
-Start a Server
---------------
-
-::
-
-    python app.py
-
-
-Create an App
---------------
-
-Just like `Create a Project`_ ::
-
-    july startapp APP_NAME
-
-This will create the folder structure of july app for you::
-
-    APP_NAME/
-        __init__.py
-        handlers.py
-        templates/
-            APP_NAME/
-
-
-Write an App
---------------
-
-July App is like BluePrint in Flask, it splits a tornado project into
-several apps.
-
-The basic usage, consider your app as::
-
-    myapp/
-        __init__.py
-        handlers.py
-
-And in your ``~myapp.handlers`` define::
-
-    class MyHandler(RequestHandler):
+    class HelloHandler(JulyHandler):
         def get(self):
-            self.write('hello july app')
+            self.write('Hello July')
 
-    handlers = [
-        ('/', MyHandler),
-    ]
+    handlers = [('/', HelloHandler)]
+    app = JulyApplication(handlers=handlers)
 
-    app = JulyApp('a readable name', __name__, handlers=handlers)
+    if __name__ == '__main__':
+        from july import run_server
+        run_server(app)
 
-    # you may also add a handler by ``app.add_handler``
-    # app.add_handler(('/', MyHandler))
+Just save it as `hello.py` (or any name you like) and run it with your Python
+interpreter::
+
+    $ python hello.py
+
+Now browser at `127.0.0.1:8000 <http://127.0.0.1:8000>`_ , and you should see
+a "Hello July" greeting.
+
+To stop the server, hit Ctrl-C.
+
+So how did it work?
+
+1. Server: we created a server by ``july.run_server``, it listens on port 8000,
+   any request to this port (8000) will be handled by the server's application.
+   The server itself does nothing, the application(JulyApplication) handles the request.
+   The server can listen on other port, for example, you want a server that listens
+   on port 5000, run `hello.py`::
+
+    $ python hello.py --port=5000
+
+   The default server is only accessible on your own computer, if you want to public
+   it to users on your network, run `hello.py`::
+
+    $ python hello.py --address=0.0.0.0
+
+   Assumes that your IP Address is 192.168.0.10, your friends can get your message
+   at `192.168.0.10:8000 <http://192.168.0.10:8000>`_ now.
+
+2. URL Map provides a way the server response. Because there are many request,
+   how could a server response the right data? URL Map solved this.
+   You are browsing at the path /, the request sends a signal to the server
+   that he is looking for page at path /. The server's application looks up its all
+   handlers(URL Map), and finds the path / should be handled by ``HelloHandler``.
+
+3. Handlers do the real work, they send the final results.
 
 
-the folder name for templates in your app, for example, in your app::
+Create by Command-line
+~~~~~~~~~~~~~~~~~~~~~~
 
-    myapp/
-        __init__.py
-        handlers.py
-        templates/
+The minimal project can be created by comman::
 
-so that template_folder is ``templates``. And you can define your app
-with app template supports::
+    $ july startproject hello
 
-    app = JulyApp('name', __name__, template_folder='templates')
+It will create a folder called hello in the current directory, code in `hello/app.py`
+is a little similar to this minimal application.
 
 
-Register App to Project
------------------------
+Template
+----------
 
-July Application
-
-This is a wrapper for ``tornado.web.Application``.
-You define a JulyApplication::
-
-    application = JulyApplication()
-
-and when this application is called, it creates a
-``tornado.web.Application``, which means, application() is somewhat a
-``tornado.web.Application()``.
-
-so, you can do more with application before it is called.
-
-The most useful task for JulyApplication is registering a July App.
-Define you July App, and register it to your application::
-
-    simple_app = JulyApp('name', __name__, handlers=handlers)
-    application.register_app(simple_app)
-
-And start your application::
-
-    application().listen(8888)
-    ioloop.IOLoop.instance().start()
+Static
+--------

@@ -20,5 +20,7 @@ User's Guide documentation
 
     install
     quickstart
-    tutorial
-    application
+    tutorial/index
+    deploy
+    design
+    changelog

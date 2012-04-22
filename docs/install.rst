@@ -1,12 +1,16 @@
+.. _installation:
+
 Installation
 ============
 
-The required library is Tornado_, and an optional library is SQLAlchemy_.
-Although SQLAlchemy is optional, you should install it if you want a better solution
-for database.
+The required library is Tornado_, and optional libraries are SQLAlchemy_ and memcache.
 
-Tornado is a web server, and July Tornado is built on it. SQLAlchemy is a powerful database
-engine, July Tornado provides an easy way to integrate it with Tornado.
+You don't need SQLAlchemy and memcache right now, but you will find that they are pretty
+useful, in that case, you could head over to :ref:`database-and-cache` for detail
+information.
+
+Tornado is a web server, and July is built on it.
+July provides an better way to organize your tornado project.
 
 .. _Tornado: http://tornadoweb.org
 .. _SQLAlchemy: http://www.sqlalchemy.org
@@ -48,7 +52,6 @@ Now, you are on a virtual environment called july. Any python package will be in
 on this july environment now::
 
     $ pip install july
-    $ pip install SQLAlchemy
 
 
 System-Wide Installation
