@@ -6,9 +6,6 @@ class TestJulyApp(object):
     def setUp(self):
         self.app = JulyApp('test', __name__)
 
-    def tearDown(self):
-        del self.app
-
     def test_first_register(self):
         assert self.app.first_register() == True
         assert self.app.first_register() == False

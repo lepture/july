@@ -1,5 +1,6 @@
 from tornado import web, escape
 from july.template import JulyTemplateLoader
+from july.cache import cache
 
 __all__ = ["JulyHandler", "ApiHandler", "run_server"]
 
@@ -40,6 +41,40 @@ class JulyHandler(web.RequestHandler):
             return JulyTemplateLoader(template_path, app, **kwargs)
         return super(JulyHandler, self).create_template_loader(template_path)
 
+    def flash_message(self, msg=None, type='info'):
+        """flash_message provide an easy way to communicate with users.
+
+        create message in your handler::
+
+            class HomeHandler(JulyHandler):
+                def get(self):
+                    self.flash_message('thanks')
+                    self.render('home.html')
+
+        and get messages in ``home.html``::
+
+            <ul>
+                {% for type, message in flash_message() $}
+                <li>{{type}}: {{message}}</li>
+                {% end %}
+            </ul>
+        """
+        #: use xsrf token or not ?
+        token = self.xsrf_token
+        key = '%s_flash_message' % token
+        if msg is None:
+            messages = cache.get(key)
+            cache.delete(key)
+            return messages
+        message = (type, msg)
+        messages = cache.get(key)
+        if isinstance(messages, list):
+            messages.append(message)
+        else:
+            messages = [message]
+        cache.set(key, messages, 600)
+        return message
+
     def render_string(self, template_name, **kwargs):
         #: add application filters
         if '__july_filters__' in self.settings:
@@ -55,6 +90,8 @@ class JulyHandler(web.RequestHandler):
         if app and '__july_filters__' in app.settings:
             kwargs.update(app.settings['__july_filters__'])
 
+        #: flash message support
+        kwargs['flash_message'] = self.flash_message
         return super(JulyHandler, self).render_string(template_name, **kwargs)
 
 

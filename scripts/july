@@ -117,10 +117,6 @@ def startapp(name):
     f.close()
 
 
-def createdb():
-    pass
-
-
 def main():
     parser = argparse.ArgumentParser(
         prog='july',
