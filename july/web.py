@@ -87,6 +87,9 @@ class JulyHandler(web.RequestHandler):
         cache.set(key, messages, 600)
         return message
 
+    def reverse_redirect(self, name, *args):
+        self.redirect(self.reverse_url(name, *args))
+
     def render_string(self, template_name, **kwargs):
         #: add application filters
         if '__july_filters__' in self.settings:
