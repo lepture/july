@@ -4,6 +4,8 @@ Design Pattern
 Configuration
 ----------------
 
+.. _project-vs-app:
+
 Project vs App
 ---------------
 

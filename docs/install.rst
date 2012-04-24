@@ -10,7 +10,7 @@ useful, in that case, you could head over to :ref:`database-and-cache` for detai
 information.
 
 Tornado is a web server, and July is built on it.
-July provides an better way to organize your tornado project.
+July provides a better way to organize your tornado project.
 
 .. _Tornado: http://tornadoweb.org
 .. _SQLAlchemy: http://www.sqlalchemy.org

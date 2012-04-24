@@ -21,6 +21,7 @@ User's Guide documentation
     install
     quickstart
     tutorial/index
-    deploy
+    template
     design
+    deploy
     changelog
