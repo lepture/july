@@ -1,5 +1,8 @@
+import functools
 from time import time as sys_time
 from tornado.options import options
+
+__all__ = ['cache', 'cache_decorator']
 
 
 class _Cache(object):
@@ -110,3 +113,26 @@ class _Cache(object):
 
 
 cache = _Cache.create_instance()
+
+
+class cache_decorator(object):
+    """Cache decorator, an easy way to manage cache.
+    The result key will be like: prefix:arg1-arg2
+    """
+    def __init__(self, prefix, time=0):
+        self.prefix = prefix
+        self.time = time
+
+    def __call__(self, method):
+        @functools.wraps(method)
+        def wrapper(cls, *args):
+            if args:
+                key = self.prefix + ':' + '-'.join(map(str, args))
+            else:
+                key = self.prefix
+            value = cache.get(key)
+            if value is None:
+                value = method(cls, *args)
+                cache.set(key, value, self.time)
+            return value
+        return wrapper
