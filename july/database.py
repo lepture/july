@@ -185,18 +185,17 @@ class SQLAlchemy(object):
         base = declarative_base(cls=self._model_cls, name='Model')
         base.query = self.master.query_property()
         if self.slaves:
-            base.slave = self._slave_query
+            base.slave = lambda key=None: self.slave(key).query_property()
         else:
             base.slave = lambda key=None: base.query
 
         self._base = base
         return self._base
 
-    def _slave_query(self, key=None):
+    def slave(self, key=None):
         if key and key in self.slaves:
-            return self.slaves[key].query_property()
-        slave = random.choice(self.slaves)
-        return slave.query_property()
+            return self.slaves[key]
+        return random.choice(self.slaves)
 
     def _ping_db(self):
         self.master.execute('show variables')

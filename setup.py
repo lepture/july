@@ -2,12 +2,11 @@
 # -*- coding: utf-8 -*-
 
 from setuptools import setup
-from july import __version__, __author__
 
 setup(
     name='july',
-    version=__version__,
-    author=__author__,
+    version='1.0.1',
+    author='Hsiaoming Young',
     author_email='lepture@me.com',
     url='http://lepture.com/project/july/',
     packages=['july', 'july.ext'],
