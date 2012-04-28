@@ -11,9 +11,12 @@ from sqlalchemy.orm import joinedload, joinedload_all
 from sqlalchemy.orm.util import _entity_descriptor
 from sqlalchemy.util import to_list
 from sqlalchemy.sql import operators, extract
-from tornado.ioloop import PeriodicCallback
 from tornado.options import options
 from july.util import import_object
+try:
+    from tornado.ioloop import PeriodicCallback
+except:
+    PeriodicCallback = None
 
 
 class DjangoQuery(Query):
@@ -172,7 +175,7 @@ class SQLAlchemy(object):
         else:
             self._model_cls = Model
 
-        if 'pool_recycle' in kwargs:
+        if 'pool_recycle' in kwargs and PeriodicCallback:
             # ping db, so that mysql won't goaway
             time = kwargs['pool_recycle'] * 1000
             PeriodicCallback(self._ping_db, time).start()

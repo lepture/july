@@ -1,5 +1,6 @@
 import os.path
 from tornado.web import Application, URLSpec
+from tornado.wsgi import WSGIApplication
 from july.util import get_root_path, import_object, ObjectDict
 
 
@@ -214,6 +215,12 @@ class JulyApplication(object):
         self.add_ui_moudle(app.ui_modules)
 
     def __call__(self):
-        app = Application(self.handlers, self.default_host, self.transforms,
-                          self.wsgi, **self.settings)
+        if self.wsgi:
+            app = WSGIApplication(self.handlers, self.default_host,
+                                  **self.settings)
+            return app
+        app = Application(
+            self.handlers, self.default_host, self.transforms,
+            self.wsgi, **self.settings
+        )
         return app
