@@ -3,7 +3,7 @@
 Template
 ==========
 
-July is a set of tools to make tornado more easy to organize, it didn't create a new template
+July is a set of tools to make tornado easier to organize, it didn't create a new template
 engine, instead, this section is all about tornado's template engine.
 
 
@@ -151,7 +151,7 @@ You can even try catch::
 
     {% try %}
         ...
-    {% excetp %}
+    {% except %}
         ...
     {% finally %}
 
