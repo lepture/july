@@ -13,10 +13,6 @@ from sqlalchemy.util import to_list
 from sqlalchemy.sql import operators, extract
 from tornado.options import options
 from july.util import import_object
-try:
-    from tornado.ioloop import PeriodicCallback
-except:
-    PeriodicCallback = None
 
 
 class DjangoQuery(Query):
@@ -147,10 +143,14 @@ class Model(object):
             setattr(self, k, v)
 
 
-def create_session(engine, **kwargs):
-    if isinstance(engine, basestring):
-        engine = create_engine(engine, **kwargs)
-    return scoped_session(sessionmaker(bind=engine, query_cls=DjangoQuery))
+def _create_session(bind, class_=None, autoflush=True, autocommit=False,
+                   expire_on_commit=True, **kwargs):
+    engine = create_engine(bind, **kwargs)
+    session = sessionmaker(
+        bind=engine, class_=class_, autoflush=autoflush, autocommit=autocommit,
+        expire_on_commit=expire_on_commit, query_cls=DjangoQuery
+    )
+    return engine, scoped_session(session)
 
 
 class SQLAlchemy(object):
@@ -158,27 +158,29 @@ class SQLAlchemy(object):
     """
 
     def __init__(self, master, slaves=None, **kwargs):
-        self.engine = create_engine(master, **kwargs)
-
-        self.master = create_session(self.engine)
+        self.engine, self.master = _create_session(master, **kwargs)
 
         self.slaves = {}
         if isinstance(slaves, basestring):
-            self.slaves['default'] = create_session(slaves, **kwargs)
+            _, self.slaves['default'] = _create_session(slaves, **kwargs)
 
         if isinstance(slaves, dict):
             for key, value in slaves.items():
-                self.slaves[key] = create_session(value, **kwargs)
+                _, self.slaves[key] = _create_session(value, **kwargs)
 
         if 'model_cls' in kwargs:
             self._model_cls = import_object(kwargs['model_cls'])
         else:
             self._model_cls = Model
 
-        if 'pool_recycle' in kwargs and PeriodicCallback:
-            # ping db, so that mysql won't goaway
-            time = kwargs['pool_recycle'] * 1000
-            PeriodicCallback(self._ping_db, time).start()
+        if 'pool_recycle' in kwargs:
+            try:
+                # ping db, so that mysql won't goaway
+                from tornado.ioloop import PeriodicCallback
+                time = kwargs['pool_recycle'] * 1000
+                PeriodicCallback(self._ping_db, time).start()
+            except:
+                pass
 
     @property
     def Model(self):
