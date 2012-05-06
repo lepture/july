@@ -1,8 +1,6 @@
 #!/usr/bin/env python
 import os
-import sys
 import argparse
-import tornado.escape
 
 
 PROJECT_APP_PY = """#!/usr/bin/env python
@@ -119,70 +117,6 @@ def startapp(name):
     f.close()
 
 
-def _slimmer(path):
-    import slimmer
-    f = open(path)
-    code = f.read()
-    f.close()
-    if path.endswith('.css'):
-        slimmed = slimmer.css_slimmer(code)
-        pass
-
-
-def _get_http_static(url, build='build'):
-    import hashlib
-    key = hashlib.md5(url).hexdigest()
-    filename = os.path.join(os.getcwd(), build, key)
-    if os.path.exists(filename):
-        return filename
-    dirs = os.path.split(filename)[0]
-    if not os.path.exists(dirs):
-        os.makedirs(dirs)
-
-    def report_hook(read, chunk, total):
-        downloaded = read * chunk
-        percent = round((downloaded / float(total)) * 100, 2)
-
-        bar = int(downloaded * 40 / float(total))
-        progress = '#' * bar + ' ' * (40 - bar)
-        if downloaded >= total:
-            sys.stdout.write('\n')
-        else:
-            sys.stdout.write('\r%s   %s%%' % (progress, percent))
-
-        sys.stdout.flush()
-
-    import urllib
-    print('Downloading: %s' % url)
-    urllib.urlretrieve(url, filename, reporthook=report_hook)
-    return filename
-
-
-def static_compile(path='july.json'):
-    """july.json
-    {
-        "source": "path/to/assets",
-        "output": "path/to/output",
-        "tmpdir": "build/",
-        "css-compiler": "slimmer",
-        "js-compiler": "uglifyjs",
-        "alias": {
-            "jquery": "http://code.jquery.com/jquery.js"
-        },
-        "target": {
-            "name": {
-                "css/style.css": ["base.css", "form.css", "style.css"],
-                "js/app.js": ["jquery", "app.js"]
-            }
-        }
-    }
-    """
-    f = open(path)
-    config = tornado.escape.json_decode(f.read())
-    f.close()
-    print config
-
-
 def main():
     parser = argparse.ArgumentParser(
         prog='july',
@@ -196,22 +130,11 @@ def main():
     else:
         command = None
 
-    if len(args.command) > 1:
-        second = args.command[1]
-    else:
-        second = None
-
     if command == 'startproject':
         startproject(args.command[1])
     elif command == 'startapp':
         startapp(args.command[1])
-    elif command == 'compile':
-        if second:
-            static_compile(second)
-        else:
-            static_compile()
 
 
 if __name__ == '__main__':
-    #main()
-    _get_http_static('http://code.jquery.com/jquery.js')
+    main()
