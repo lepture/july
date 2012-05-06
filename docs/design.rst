@@ -107,3 +107,7 @@ Filter and Context
 
 Message
 --------
+
+Good applications and user interfaces are all about feedback. For example,
+when a user did some task, he wanted to know it worked or not.
+

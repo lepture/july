@@ -1,10 +1,10 @@
 Changelog
 =========
 
-Changelog place holder.
+Here is the full changelog of July, it is the history of July.
 
 
-Version 1.0.0
+Version 0.0.1
 -------------
 
 First publish.

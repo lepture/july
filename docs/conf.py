@@ -43,7 +43,7 @@ master_doc = 'index'
 
 # General information about the project.
 project = u'July'
-copyright = u'2012, <a href="http://lepture.com">lepture</a>'
+copyright = u'2012, <a href="http://lepture.com">Hsiaoming Yang</a>'
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
@@ -66,7 +66,7 @@ release = '0.1'
 
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.
-exclude_patterns = []
+exclude_patterns = ['_build']
 
 # The reST default role (used for this markup: `text`) to use for all documents.
 #default_role = None
