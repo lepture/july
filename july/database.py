@@ -15,7 +15,7 @@ from tornado.options import options
 from july.util import import_object
 
 
-class DjangoQuery(Query):
+class JulyQuery(Query):
     #: https://github.com/mitsuhiko/sqlalchemy-django-query
     """Can be mixed into any Query class of SQLAlchemy and extends it to
     implements more Django like behavior:
@@ -46,6 +46,9 @@ class DjangoQuery(Query):
         'month': lambda c, x: extract('month', c) == x,
         'day': lambda c, x: extract('day', c) == x
     }
+
+    def get_first(self, **kwargs):
+        return self.filter_by(**kwargs).first()
 
     def filter_by(self, **kwargs):
         return self._filter_or_exclude(False, kwargs)
@@ -95,7 +98,7 @@ class DjangoQuery(Query):
                 column = column.desc()
             args[idx] = column
 
-        q = super(DjangoQuery, self).order_by(*args)
+        q = super(JulyQuery, self).order_by(*args)
         for join in joins_needed:
             q = q.join(join)
         return q
@@ -148,7 +151,7 @@ def _create_session(bind, class_=None, autoflush=True, autocommit=False,
     engine = create_engine(bind, **kwargs)
     session = sessionmaker(
         bind=engine, class_=class_, autoflush=autoflush, autocommit=autocommit,
-        expire_on_commit=expire_on_commit, query_cls=DjangoQuery
+        expire_on_commit=expire_on_commit, query_cls=JulyQuery
     )
     return engine, scoped_session(session)
 
