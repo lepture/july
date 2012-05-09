@@ -101,7 +101,8 @@ class _Cache(object):
         dct = {}
         for key in keys:
             value = self.get('%s%s' % (key_prefix, key))
-            dct[key] = value
+            if value:
+                dct[key] = value
 
         return dct
 
@@ -136,3 +137,20 @@ class cache_decorator(object):
                 cache.set(key, value, self.time)
             return value
         return wrapper
+
+
+def get_cache_list(model, id_list, key_prefix, time=600):
+    if not id_list:
+        return {}
+    id_list = set(id_list)
+    data = cache.get_multi(id_list, key_prefix=key_prefix)
+    missing = id_list - set(data)
+    if missing:
+        dct = {}
+        for item in model.query.filter_by(id__in=missing).all():
+            dct[item.id] = item
+
+        cache.set_multi(dct, time=time, key_prefix=key_prefix)
+        data.update(dct)
+
+    return data
