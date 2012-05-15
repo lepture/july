@@ -1,5 +1,5 @@
 from tornado import web, escape
-from july.template import JulyTemplateLoader
+from july.template import JulyLoader
 from july.cache import cache
 
 __all__ = ["JulyHandler", "ApiHandler", "run_server"]
@@ -34,11 +34,12 @@ class JulyHandler(web.RequestHandler):
     def create_template_loader(self, template_path):
         app = self._get_app()
         if app and self.app_template:
+            roots = [template_path, app.template_path]
             kwargs = {}
             if 'autoescape' in self.settings:
                 kwargs['autoescape'] = self.settings['autoescape']
 
-            return JulyTemplateLoader(template_path, app, **kwargs)
+            return JulyLoader(roots, **kwargs)
         return super(JulyHandler, self).create_template_loader(template_path)
 
     def on_finish(self):

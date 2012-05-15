@@ -1,19 +1,24 @@
 import os.path
-from tornado.template import Loader, Template
+from tornado.template import BaseLoader, Template
 
 
-class JulyTemplateLoader(Loader):
+class JulyLoader(BaseLoader):
     """July Template Loader
     """
 
-    def __init__(self, root_directory, app, **kwargs):
-        super(JulyTemplateLoader, self).__init__(root_directory, **kwargs)
-        self.app = app
+    def __init__(self, roots, **kwargs):
+        super(JulyLoader, self).__init__(**kwargs)
+        if isinstance(roots, basestring):
+            self.roots = [roots]
+        else:
+            assert isinstance(roots, (list, tuple)), "roots should be lists"
+            self.roots = roots
+
+    def resolve_path(self, name, parent_path=None):
+        return name
 
     def _create_template(self, name):
         path = self._detect_template_path(name)
-        if not path:
-            raise IOError("Can't find file: %s" % name)
         f = open(path, 'r')
         template = Template(f.read(), name=name, loader=self)
         f.close()
@@ -35,13 +40,9 @@ class JulyTemplateLoader(Loader):
                         screen.html
 
         """
-        path = os.path.join(self.root, name)
-        if os.path.exists(path):
-            return path
-
-        if self.app.template_path:
-            path = os.path.join(self.app.template_path, name)
+        for root in self.roots:
+            path = os.path.join(root, name)
             if os.path.exists(path):
                 return path
 
-        return None
+        return name
