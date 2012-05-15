@@ -12,7 +12,7 @@ from models import Post
 
 class CreateHandler(JulyHandler):
     def get(self):
-        self.render('create.html')
+        self.render('inner/create.html')
 
     def post(self):
         title = self.get_argument('title', '')

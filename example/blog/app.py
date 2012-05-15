@@ -1,13 +1,13 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-if __name__ == '__main__':
-    from tornado.options import options
-    options.sqlalchemy_master = 'sqlite:////tmp/demo.sqlite'
+from july import JulyHandler, JulyApplication, run_server
+
+from tornado.options import options
+options.sqlalchemy_master = 'sqlite:////tmp/demo.sqlite'
 
 import os.path
 ROOT = os.path.abspath(os.path.dirname(__file__))
-from july import JulyHandler, JulyApplication, run_server
 from post.models import Post
 from post.handlers import post_app
 
