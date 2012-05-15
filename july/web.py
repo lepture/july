@@ -2,7 +2,32 @@ from tornado import web, escape
 from july.template import JulyLoader
 from july.cache import cache
 
+#: initialize options
+from tornado.options import define
+
 __all__ = ["JulyHandler", "ApiHandler", "run_server"]
+
+
+_first_run = True
+if _first_run:
+    #: server configuration
+    define('address', default='127.0.0.1', type=str,
+           help='run server at this address')
+    define('port', default=8000, type=int, help='run server on this port')
+    define('settings', default='', type=str, help='setting file path')
+
+    #: application settings
+    define('locale_path', type=str, help='absolute path of locale directory')
+    define('default_locale', default='en_US', type=str)
+    define('enable_app_static', default=True, type=bool)
+
+    #: sqlalchemy default configuration
+    define('sqlalchemy_master', type=str, help='master databse')
+    define('sqlalchemy_slaves', default={}, type=dict, help='slave databses')
+    define('sqlalchemy_kwargs', default={}, type=dict,
+           help='sqlalchemy extra params')
+
+    _first_run = False
 
 
 class JulyHandler(web.RequestHandler):
