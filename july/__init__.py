@@ -18,5 +18,5 @@ os.environ['TZ'] = 'UTC'
 os.environ["PYTHON_EGG_CACHE"] = "/tmp/egg"
 
 
-__version__ = '1.0.0'
+__version__ = '0.9.0'
 __author__ = 'Hsiaoming Yang'
