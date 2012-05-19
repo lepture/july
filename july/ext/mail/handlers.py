@@ -4,7 +4,7 @@ import logging
 from tornado.web import URLSpec as url
 from july.web import JulyHandler
 from july.app import JulyApp
-from lib import send_mail
+from .lib import send_mail
 
 
 class MailHandler(JulyHandler):
