@@ -67,11 +67,6 @@ class JulyHandler(web.RequestHandler):
             return JulyLoader(roots, **kwargs)
         return super(JulyHandler, self).create_template_loader(template_path)
 
-    def on_finish(self):
-        #: clear flash message
-        key = '%s_flash_message' % self.xsrf_token
-        cache.delete(key)
-
     def flash_message(self, msg=None, category=None):
         """flash_message provide an easy way to communicate with users.
 
@@ -103,6 +98,9 @@ class JulyHandler(web.RequestHandler):
                 return []
             if category is not None:
                 return get_category_message(messages, category)
+
+            #: clear flash message
+            cache.delete(key)
             return messages
         message = (category, msg)
         messages = cache.get(key)
