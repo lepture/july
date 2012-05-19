@@ -1,1 +1,1 @@
-from handlers import mail_app
+from .handlers import mail_app
