@@ -7,14 +7,14 @@ import smtplib
 from email.MIMEText import MIMEText
 from email.utils import formatdate, parseaddr
 from tornado.escape import utf8
-
 from tornado.options import options
 
-#: define these options yourself
-SMTP_USER = options.smtp_user
-SMTP_PASSWORD = options.smtp_password
-SMTP_HOST = options.smtp_host
-SMTP_DURATION = int(options.smtp_duration)
+from july.util import set_default_option
+set_default_option('smtp_user', 'root@localhost')
+set_default_option('smtp_password', '')
+set_default_option('smtp_host', 'localhost')
+set_default_option('smtp_ssl', False)
+
 
 _session = None
 
@@ -31,17 +31,13 @@ def send_mail(user, subject, body, **kwargs):
     """
     message = Message(user, subject, body, **kwargs)
     msg = message.as_msg()
-    msg['From'] = SMTP_USER
-
-    SMTP_FROM = parseaddr(SMTP_USER)[1]
+    msg['From'] = options.smtp_user
 
     global _session
     if _session is None:
-        _session = _SMTPSession(
-            SMTP_HOST, SMTP_FROM, SMTP_PASSWORD, SMTP_DURATION
-        )
+        _session = _SMTPSession()
 
-    _session.send_mail(SMTP_FROM, message.email, msg.as_string())
+    _session.send_mail(message.email, msg.as_string())
 
 
 class Message(object):
@@ -66,24 +62,24 @@ class Message(object):
 
 
 class _SMTPSession(object):
-    def __init__(self, host, user='', password='', duration=30, ssl=True):
-        self.host = host
-        self.user = user
-        self.password = password
+    def __init__(self, duration=30):
+        self.host = options.smtp_host
+        self.user = parseaddr(options.smtp_user)[1]
+        self.password = options.smtp_password
         self.duration = duration
-        self.ssl = ssl
+        self.ssl = options.smtp_ssl
 
         self.renew()
 
-    def send_mail(self, fr, to, message):
+    def send_mail(self, to, message):
         if self.timeout:
             self.renew()
 
         try:
-            self.session.sendmail(fr, to, message)
+            self.session.sendmail(self.user, to, message)
         except Exception, e:
             err = "Send email from %s to %s failed!\n Exception: %s!" \
-                % (fr, to, e)
+                % (self.user, to, e)
             logging.error(err)
 
     @property

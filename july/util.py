@@ -5,6 +5,12 @@ import pkgutil
 from tornado.options import define, options
 
 
+def set_default_option(name, value):
+    if name in options:
+        return
+    define(name, value)
+
+
 def parse_config_file(path):
     config = {}
     exec(compile(open(path).read(), path, 'exec'), config, config)

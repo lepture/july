@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-from setuptools import setup
+from setuptools import setup, find_packages
 from july import __version__, __author__
 
 setup(
@@ -10,7 +10,7 @@ setup(
     author=__author__,
     author_email='lepture@me.com',
     url='http://lepture.com/project/july/',
-    packages=['july', 'july.ext'],
+    packages=find_packages(),
     description='July Tornado: a better way to organize your tornado project',
     scripts=['scripts/july'],
     install_requires=[
