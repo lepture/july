@@ -1,7 +1,8 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-from july import JulyHandler, JulyApplication, run_server
+from july.web import JulyHandler, run_server
+from july.app import JulyApplication
 
 from tornado.options import options
 options.sqlalchemy_master = 'sqlite:////tmp/demo.sqlite'

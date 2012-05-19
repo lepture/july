@@ -1,10 +1,7 @@
 # -*- coding: utf-8 -*-
 
-if __name__ == '__main__':
-    from tornado.options import options
-    options.sqlalchemy_master = 'sqlite:////tmp/demo.sqlite'
-
-from july import JulyHandler, JulyApp
+from july.web import JulyHandler
+from july.app import JulyApp
 from july.database import db
 from tornado.web import URLSpec as url
 from models import Post
@@ -43,6 +40,9 @@ post_app = JulyApp('post', __name__, handlers=handlers,
 
 
 if __name__ == '__main__':
+    from tornado.options import options
+    options.sqlalchemy_master = 'sqlite:////tmp/demo.sqlite'
+
     from july import run_server, JulyApplication
     run_server(JulyApplication(handlers=handlers, debug=True,
                                template_path="templates"))
