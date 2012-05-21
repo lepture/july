@@ -4,7 +4,7 @@
 from datetime import datetime, timedelta
 import logging
 import smtplib
-from email.MIMEText import MIMEText
+from email.mime.text import MIMEText
 from email.utils import formatdate, parseaddr
 from tornado.escape import utf8
 from tornado.options import options
