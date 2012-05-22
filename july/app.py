@@ -177,6 +177,8 @@ class JulyApplication(object):
         self.settings['__july_global__'][key] = value
 
     def register_app(self, app, url_prefix=''):
+        if isinstance(app, str):
+            app = import_object(app)
         if app.first_register():
             if '__july_apps__' not in self.settings:
                 self.settings['__july_apps__'] = {}
