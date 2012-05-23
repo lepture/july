@@ -5,6 +5,7 @@ import random
 from sqlalchemy import create_engine
 from sqlalchemy.orm import scoped_session, sessionmaker
 from sqlalchemy.orm import Query
+from sqlalchemy.orm.session import Session
 from sqlalchemy.ext.declarative import declarative_base, declared_attr
 
 from sqlalchemy.orm import joinedload, joinedload_all
@@ -146,11 +147,15 @@ class Model(object):
             setattr(self, k, v)
 
 
-def _create_session(bind, class_=None, autoflush=True, autocommit=False,
+class _Sess(Session):
+    pass
+
+
+def _create_session(bind, autoflush=True, autocommit=False,
                    expire_on_commit=True, **kwargs):
     engine = create_engine(bind, **kwargs)
     session = sessionmaker(
-        bind=engine, class_=class_, autoflush=autoflush, autocommit=autocommit,
+        bind=engine, class_=_Sess, autoflush=autoflush, autocommit=autocommit,
         expire_on_commit=expire_on_commit, query_cls=JulyQuery
     )
     return engine, scoped_session(session)
