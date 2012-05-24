@@ -163,7 +163,6 @@ define('default_locale', default='en_US', type=str)
 define('enable_app_static', default=True, type=bool)
 
 #: sqlalchemy default configuration
-define('sqlalchemy_master', type=str, help='master databse')
-define('sqlalchemy_slaves', default={}, type=dict, help='slave databses')
+define('sqlalchemy_engine', type=str, help='databse engine')
 define('sqlalchemy_kwargs', default={}, type=dict,
        help='sqlalchemy extra params')
