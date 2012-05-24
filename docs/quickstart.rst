@@ -12,7 +12,8 @@ A Minimal Application
 
 A minimal July application looks something like this::
 
-    from july import JulyHandler, JulyApplication
+    from july.web import JulyHandler
+    from july.app import JulyApplication
 
 
     class HelloHandler(JulyHandler):

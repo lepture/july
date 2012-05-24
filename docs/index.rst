@@ -16,7 +16,7 @@ User's Guide
 
 This documentation is for people who are interested in Tornado, and who want
 the app feature in Tornado. However, it contains some useful information about
-Tornado(like Template) which may helps you.
+Tornado(like Template) which may help you.
 
 .. toctree::
     :maxdepth: 2
