@@ -112,7 +112,8 @@ Access a template can be easy, folder structure::
 And in app.py::
 
     import os.path
-    from july import JulyHandler, JulyApplication, run_server
+    from july.web import JulyHandler, run_server
+    from july.app import JulyApplication
 
     class HomeHandler(JulyHandler):
         def get(self, name):
