@@ -221,7 +221,7 @@ class _ModelTableNameDescriptor(object):
 
 
 class Pagination(object):
-    def __init__(self, query, page, per_page):
+    def __init__(self, query, page, per_page, total=None):
         self.query = query
         self.per_page = per_page
         self.page = page
@@ -229,9 +229,10 @@ class Pagination(object):
         self.items = query.offset((self.page - 1) * self.per_page)\
                 .limit(self.per_page)
 
-    @property
-    def total(self):
-        return self.query.count()
+        if total:
+            self.total = total
+        else:
+            self.total = query.count()
 
     def iter_pages(self, left_edge=2, left_current=2,
                    right_current=5, right_edge=2):
@@ -292,7 +293,7 @@ class BaseQuery(orm.Query):
             raise tornado.web.HTTPError(404)
         return rv
 
-    def paginate(self, page, per_page=20, error_out=True):
+    def paginate(self, page, per_page=20, error_out=True, total=None):
         """Returns `per_page` items from page `page`.  By default it will
         abort with 404 if no items were found and the page was larger than
         1.  This behavor can be disabled by setting `error_out` to `False`.
@@ -305,7 +306,7 @@ class BaseQuery(orm.Query):
             raise tornado.web.HTTPError(404)
         if error_out and page < 1:
             raise tornado.web.HTTPError(404)
-        return Pagination(self, page, per_page)
+        return Pagination(self, page, per_page, total)
 
     #: https://github.com/mitsuhiko/sqlalchemy-django-query
     """Can be mixed into any Query class of SQLAlchemy and extends it to
