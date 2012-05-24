@@ -226,14 +226,12 @@ class Pagination(object):
         self.per_page = per_page
         self.page = page
 
+        self.items = query.offset((self.page - 1) * self.per_page)\
+                .limit(self.per_page)
+
     @property
     def total(self):
         return self.query.count()
-
-    @property
-    def items(self):
-        return self.query.offset((self.page - 1) * self.per_page)\
-                .limit(self.per_page)
 
     def iter_pages(self, left_edge=2, left_current=2,
                    right_current=5, right_edge=2):
@@ -301,6 +299,10 @@ class BaseQuery(orm.Query):
 
         Returns an :class:`Pagination` object.
         """
+        try:
+            page = int(page)
+        except:
+            raise tornado.web.HTTPError(404)
         if error_out and page < 1:
             raise tornado.web.HTTPError(404)
         return Pagination(self, page, per_page)
