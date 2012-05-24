@@ -108,8 +108,8 @@ Or with ``comment`` keyword for oneline::
 Inherits and Includes
 ---------------------
 
-Just like Django and Jinja, tornado template provides ``extends``, ``block`` and ``include``,
-example at :ref:`syntax-overview`.
+Just like Django and Jinja, tornado template provides ``extends``,
+``block`` and ``include``, example at :ref:`syntax-overview`.
 
 Differences from Django and Jinja:
 
@@ -124,7 +124,11 @@ Differences from Django and Jinja:
     {% extends "../layout.html" %}
 
 
-Tornado template finds a template by reversing path.
+Tornado template finds a template by reversing path. But July changed the way,
+so you can ``extends`` or ``include`` with::
+
+    {% extends "layout.html" %}
+
 
 Python Code
 ------------
