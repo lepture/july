@@ -234,7 +234,7 @@ class Pagination(object):
         else:
             self.total = query.count()
 
-        if self.page > self.pages:
+        if self.page > 1 and self.page > self.pages:
             raise tornado.web.HTTPError(404)
 
     def iter_pages(self, left_edge=2, left_current=2,
