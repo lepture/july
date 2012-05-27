@@ -14,11 +14,6 @@ class TestJulyApp(object):
         self.app.add_handler(('/', 'TestJulyApp'))
         assert self.app.handlers == [('/', 'TestJulyApp')]
 
-    def test_register_filter(self):
-        assert '__july_filters__' not in self.app.settings
-        self.app.register_filter('min', min)
-        assert '__july_filters__' in self.app.settings
-
 
 class TestJulyApplication(object):
     def setUp(self):
