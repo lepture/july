@@ -8,7 +8,7 @@ class JulyLoader(BaseLoader):
 
     def __init__(self, roots, **kwargs):
         super(JulyLoader, self).__init__(**kwargs)
-        if isinstance(roots, basestring):
+        if isinstance(roots, str):
             self.roots = [roots]
         else:
             assert isinstance(roots, (list, tuple)), "roots should be lists"

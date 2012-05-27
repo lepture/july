@@ -1,5 +1,6 @@
 import os.path
 from tornado.web import Application, URLSpec
+from july.template import JulyLoader
 from tornado.wsgi import WSGIApplication
 from july.util import get_root_path, import_object, ObjectDict
 
@@ -78,16 +79,6 @@ class JulyApp(object):
         else:
             self.handlers.append(handler)
 
-    def register_filter(self, name, func):
-        """Register filter function for template.
-
-        .. admonition:: this filter can only be accessed in this app.
-        """
-        if '__july_filters__' not in self.settings:
-            self.settings['__july_filters__'] = {}
-
-        self.settings['__july_filters__'].update({name: func})
-
     def first_register(self):
         if not self._first_register:
             return False
@@ -127,6 +118,14 @@ class JulyApplication(object):
         self.default_host = default_host
         self.transforms = transforms
         self.wsgi = wsgi
+
+        if 'template_path' in settings:
+            template_path = settings.pop('template_path')
+            if isinstance(template_path, str):
+                settings['template_path'] = [template_path]
+        else:
+            settings['template_path'] = []
+
         self.settings = settings
 
     def add_handler(self, handler):
@@ -180,12 +179,11 @@ class JulyApplication(object):
         if isinstance(app, str):
             app = import_object(app)
         if app.first_register():
-            if '__july_apps__' not in self.settings:
-                self.settings['__july_apps__'] = {}
-
-            self.settings['__july_apps__'][app.import_name] = app
             self._register_app_handlers(app, url_prefix)
             self._register_app_ui_modules(app)
+
+            if app.template_path:
+                self.settings['template_path'].append(app.template_path)
 
     def _register_app_handlers(self, app, url_prefix):
         if not app.handlers:
@@ -217,6 +215,12 @@ class JulyApplication(object):
         self.add_ui_moudle(app.ui_modules)
 
     def __call__(self):
+        kwargs = {}
+        if 'autoescape' in self.settings:
+            kwargs['autoescape'] = self.settings['autoescape']
+        path = self.settings.pop('template_path')
+        loader = JulyLoader(path, **kwargs)
+        self.settings['template_loader'] = loader
         if self.wsgi:
             app = WSGIApplication(self.handlers, self.default_host,
                                   **self.settings)

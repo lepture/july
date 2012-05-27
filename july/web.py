@@ -1,5 +1,4 @@
 from tornado import web, escape
-from july.template import JulyLoader
 from july.cache import cache
 
 #: initialize options
@@ -13,37 +12,7 @@ class JulyHandler(web.RequestHandler):
 
     Subclass JulyHandler to make an app, it provides a way to organize a July
     App, and will support more features in the future.
-
-    If you don't want the in app template feature, set app_template=False::
-
-        class HomeHandler(JulyHandler):
-            app_template = False
-
-            def get(self):
-                self.write('hello world')
     """
-    app_template = True
-
-    def _get_app(self):
-        if hasattr(self, '_july_app'):
-            return self._july_app
-        if '__july_apps__' in self.settings:
-            app = self.settings['__july_apps__'].get(self.__module__, None)
-            self._july_app = app
-        else:
-            self._july_app = None
-        return self._july_app
-
-    def create_template_loader(self, template_path):
-        app = self._get_app()
-        if app and self.app_template:
-            roots = [template_path, app.template_path]
-            kwargs = {}
-            if 'autoescape' in self.settings:
-                kwargs['autoescape'] = self.settings['autoescape']
-
-            return JulyLoader(roots, **kwargs)
-        return super(JulyHandler, self).create_template_loader(template_path)
 
     def flash_message(self, msg=None, category=None):
         """flash_message provide an easy way to communicate with users.
@@ -101,11 +70,6 @@ class JulyHandler(web.RequestHandler):
         if '__july_global__' in self.settings:
             assert "g" not in kwargs, "g is a reserved keyword."
             kwargs["g"] = self.settings['__july_global__']
-
-        #: add app filters
-        app = self._get_app()
-        if app and '__july_filters__' in app.settings:
-            kwargs.update(app.settings['__july_filters__'])
 
         #: flash message support
         kwargs['flash_message'] = self.flash_message
