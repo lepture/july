@@ -452,7 +452,7 @@ class SQLAlchemy(object):
         >>> user_list = User.query.filter_by(username='name').limit(10)
 
     """
-    def __init__(self, engine_url, echo=False, pool_recycle=7200,
+    def __init__(self, engine_url, echo=False, pool_recycle=3600,
                  pool_size=10, session_extensions=None, session_options=None):
         # create signals sender
         self.sender = str(uuid.uuid4())
@@ -462,10 +462,13 @@ class SQLAlchemy(object):
         self.session = self.create_scoped_session(session_options)
         self.Model = self.make_declarative_base()
 
-        self.engine = sqlalchemy.create_engine(
-            engine_url, echo=echo, pool_recycle=pool_recycle,
-            pool_size=pool_size
-        )
+        if engine_url.startswith('sqlite'):
+            self.engine = sqlalchemy.create_engine(engine_url, echo=echo)
+        else:
+            self.engine = sqlalchemy.create_engine(
+                engine_url, echo=echo, pool_recycle=pool_recycle,
+                pool_size=pool_size
+            )
 
         _include_sqlalchemy(self)
 
