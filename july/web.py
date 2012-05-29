@@ -2,7 +2,7 @@ from tornado import web, escape
 from july.cache import cache
 
 #: initialize options
-from tornado.options import define
+from july.util import set_default_option
 
 __all__ = ["JulyHandler", "ApiHandler", "run_server"]
 
@@ -116,17 +116,20 @@ def run_server(app):
     ioloop.IOLoop.instance().start()
 
 
-define('address', default='127.0.0.1', type=str,
+set_default_option('address', default='127.0.0.1', type=str,
        help='run server at this address')
-define('port', default=8000, type=int, help='run server on this port')
-define('settings', default='', type=str, help='setting file path')
+set_default_option('port', default=8000, type=int,
+                   help='run server on this port')
+set_default_option('settings', default='', type=str,
+                   help='setting file path')
 
 #: application settings
-define('locale_path', type=str, help='absolute path of locale directory')
-define('default_locale', default='en_US', type=str)
-define('enable_app_static', default=True, type=bool)
+set_default_option('locale_path', type=str,
+                   help='absolute path of locale directory')
+set_default_option('default_locale', default='en_US', type=str)
+set_default_option('enable_app_static', default=True, type=bool)
 
 #: sqlalchemy default configuration
-define('sqlalchemy_engine', type=str, help='databse engine')
-define('sqlalchemy_kwargs', default={}, type=dict,
+set_default_option('sqlalchemy_engine', type=str, help='databse engine')
+set_default_option('sqlalchemy_kwargs', default={}, type=dict,
        help='sqlalchemy extra params')
