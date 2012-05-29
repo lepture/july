@@ -10,7 +10,6 @@ define('smtp_ssl', True)
 from july.web import JulyHandler, run_server
 from july.app import JulyApplication
 from july.ext import webservice
-from july.ext.mail import mail_app
 
 import os.path
 ROOT = os.path.abspath(os.path.dirname(__file__))
@@ -40,7 +39,7 @@ settings = dict(
 
 application = JulyApplication(handlers=handlers, debug=True, **settings)
 
-application.register_app(mail_app, url_prefix='/mail')
+application.register_app('july.ext.mail.handlers.app', url_prefix='/mail')
 
 if __name__ == '__main__':
     run_server(application)

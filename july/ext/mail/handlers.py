@@ -34,7 +34,7 @@ class MailHandler(JulyHandler):
         self.write('')
 
 
-mail_app = JulyApp(
+app = JulyApp(
     'mail', __name__,
     handlers=[url('/outbox', MailHandler, name='mail-outbox')]
 )
