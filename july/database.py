@@ -237,18 +237,12 @@ class Pagination(object):
         if self.page > 1 and self.page > self.pages:
             raise tornado.web.HTTPError(404)
 
-    def iter_pages(self, left_edge=2, left_current=2,
-                   right_current=5, right_edge=2):
-        last = 0
-        for num in xrange(1, self.pages + 1):
-            if num <= left_edge or \
-               (num > self.page - left_current - 1 and \
-                num < self.page + right_current) or \
-               num > self.pages - right_edge:
-                if last + 1 != num:
-                    yield None
-                yield num
-                last = num
+    def iter_pages(self, edge=4):
+        if self.page <= edge:
+            return range(1, min(self.pages, 2 * edge + 1) + 1)
+        if self.page + edge > self.pages:
+            return range(max(self.pages - 2 * edge, 1), self.pages + 1)
+        return range(self.page - edge, min(self.pages, self.page + edge) + 1)
 
     @property
     def pages(self):
