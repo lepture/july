@@ -1,0 +1,103 @@
+<!DOCTYPE HTML>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>July</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=0" />
+        <meta name="author" content="lepture" />
+        <link rel="alternate" type="application/rss+xml" href="http://feeds.lepture.com/lepture" title="Website Feed" />
+        <link rel="stylesheet" href="http://python-assets.b0.upaiyun.com/project/typo.css" />
+        <link rel="stylesheet" href="http://python-assets.b0.upaiyun.com/project/pygments.css" />
+        <script type="text/javascript">
+            var _gaq = _gaq || [];
+            _gaq.push(['_setAccount', 'UA-21475122-1']);
+            _gaq.push(['_trackPageview']);
+            _gaq.push(['_trackPageLoadTime']);
+            _gaq.push(['_setCustomVar', 1, 'Project', 'July', 2]);
+            (function() {
+             var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+             ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+             var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+             })();
+        </script>
+    </head>
+    <body>
+        <div class="container">
+            <h1>July</h1>
+
+<p>July is the best season for Tornado , it’s all about how to organize a tornado
+project. It is inspired by Django and Flask.</p>
+
+<blockquote>
+<p>This is a project by <a href="http://lepture.com">Hsiaoming Yang</a>. All projects are listed at <a href="http://project.lepture.com">project page</a>.</p>
+</blockquote>
+
+<ul>
+<li><a href="http://july.readthedocs.org/">Documentation</a></li>
+<li><a href="https://github.com/lepture/july">GitHub</a></li>
+<li><a href="http://pypi.python.org/pypi/july">PyPi</a></li>
+</ul>
+
+<h2>Feature</h2>
+
+<ul>
+<li>Organize tornado as App</li>
+<li>Built-in SQLAlchemy</li>
+<li>Flash message design</li>
+<li>Built-in Mail App</li>
+</ul>
+
+<p>and more.</p>
+
+<h2>Overview</h2>
+
+<p>A minimal July Application:</p>
+<div class="highlight"><pre><span class="kn">from</span> <span class="nn">july.web</span> <span class="kn">import</span> <span class="n">JulyHandler</span>
+<span class="kn">from</span> <span class="nn">july.app</span> <span class="kn">import</span> <span class="n">JulyApplication</span>
+
+
+<span class="k">class</span> <span class="nc">HelloHandler</span><span class="p">(</span><span class="n">JulyHandler</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">get</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s">&#39;Hello July&#39;</span><span class="p">)</span>
+
+    <span class="n">handlers</span> <span class="o">=</span> <span class="p">[(</span><span class="s">&#39;/&#39;</span><span class="p">,</span> <span class="n">HelloHandler</span><span class="p">)]</span>
+    <span class="n">application</span> <span class="o">=</span> <span class="n">JulyApplication</span><span class="p">(</span><span class="n">handlers</span><span class="o">=</span><span class="n">handlers</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">__name__</span> <span class="o">==</span> <span class="s">&#39;__main__&#39;</span><span class="p">:</span>
+    <span class="kn">from</span> <span class="nn">july</span> <span class="kn">import</span> <span class="n">run_server</span>
+    <span class="n">run_server</span><span class="p">(</span><span class="n">application</span><span class="p">)</span>
+</pre></div>
+
+<p>Get more information on <a href="http://july.readthedocs.org/">documentation</a>.</p>
+
+<h2>Installation</h2>
+
+<p>This project is <strong>UNDER DEVELOPMENT</strong>, it is not robust.</p>
+
+<ul>
+<li>Install with pip:</li>
+</ul>
+
+<pre><code>$ pip install july</code></pre>
+
+<ul>
+<li>Install with easy_install:</li>
+</ul>
+
+<pre><code>$ easy_install july</code></pre>
+
+<h2>Bug report</h2>
+
+<p>If you have any trouble, report bug at <a href="https://github.com/lepture/july/issues">GitHub Issue</a>.</p>
+
+        </div>
+        <hr class="end" />
+        <div id="footer">
+            <a href="https://github.com/lepture">GitHub</a>
+            <a href="http://lepture.com">Website</a>
+            <a href="https://twitter.com/lepture">Twitter</a>
+        </div>
+        <a id="github" href="https://github.com/lepture/july" target="_blank"><img style="position: absolute; top: 0; right: 0; border: 0; z-index:999" src="http://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png" alt="Fork me on GitHub"></a>
+    </body>
+</html>
+
