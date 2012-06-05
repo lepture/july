@@ -9,7 +9,7 @@ setup(
     version=__version__,
     author=__author__,
     author_email='lepture@me.com',
-    url='http://lepture.com/project/july/',
+    url='http://project.lepture.com/july/',
     packages=find_packages(),
     description='July Tornado: a better way to organize your tornado project',
     scripts=['scripts/july'],
