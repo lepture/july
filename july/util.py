@@ -11,9 +11,16 @@ def set_default_option(name, default=None, **kwargs):
     define(name, default, **kwargs)
 
 
+def reset_option(name, default=None, **kwargs):
+    if name in options:
+        options[name].set(default)
+        return
+    define(name, default, **kwargs)
+
+
 def parse_config_file(path):
     config = {}
-    exec(compile(open(path).read(), path, 'exec'), config, config)
+    execfile(path, config, config)
     for name in config:
         if name in options:
             options[name].set(config[name])

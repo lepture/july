@@ -1,10 +1,10 @@
 from tornado import web, escape
-from july.cache import cache
+from .cache import cache
 
 #: initialize options
-from july.util import set_default_option
+from .util import set_default_option
 
-__all__ = ["JulyHandler", "ApiHandler", "run_server"]
+__all__ = ["JulyHandler", "ApiHandler", "init_options", "run_server"]
 
 
 class JulyHandler(web.RequestHandler):
@@ -99,12 +99,26 @@ class ApiHandler(web.RequestHandler):
         super(ApiHandler, self).write(chunk)
 
 
+def init_options():
+    import os.path
+    from tornado.options import options, parse_command_line
+    from .util import parse_config_file
+    parse_command_line()
+
+    if options.settings:
+        path = os.path.abspath(options.settings)
+        print("Load settings from %s" % path)
+        parse_config_file(path)
+
+    return
+
+
 def run_server(app):
     import logging
     import tornado.locale
     from tornado import httpserver, ioloop
-    from tornado.options import options, parse_command_line
-    parse_command_line()
+    from tornado.options import options
+
     server = httpserver.HTTPServer(app(), xheaders=True)
     server.listen(int(options.port), options.address)
 
@@ -127,9 +141,3 @@ set_default_option('settings', default='', type=str,
 set_default_option('locale_path', type=str,
                    help='absolute path of locale directory')
 set_default_option('default_locale', default='en_US', type=str)
-set_default_option('enable_app_static', default=True, type=bool)
-
-#: sqlalchemy default configuration
-set_default_option('sqlalchemy_engine', type=str, help='databse engine')
-set_default_option('sqlalchemy_kwargs', default={}, type=dict,
-       help='sqlalchemy extra params')

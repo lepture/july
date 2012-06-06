@@ -2,7 +2,7 @@ import os.path
 from tornado.web import Application, URLSpec
 from july.template import JulyLoader
 from tornado.wsgi import WSGIApplication
-from july.util import get_root_path, import_object, ObjectDict
+from .util import get_root_path, import_object, ObjectDict
 
 
 __all__ = ["JulyApp", "JulyApplication"]
