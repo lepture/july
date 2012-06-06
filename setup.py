@@ -1,6 +1,12 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+import sys
+kwargs = {}
+major, minor = sys.version_info[:2]
+if major >= 3:
+    kwargs['use_2to3'] = True
+
 from setuptools import setup, find_packages
 from july import __version__, __author__
 
@@ -28,4 +34,5 @@ setup(
         'Topic :: Internet :: WWW/HTTP :: Dynamic Content',
         'Topic :: Software Development :: Libraries :: Python Modules'
     ],
+    **kwargs
 )
