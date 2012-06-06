@@ -500,6 +500,11 @@ class SQLAlchemy(object):
         return cls._instance
 
 
+#: sqlalchemy default configuration
+set_default_option('sqlalchemy_engine', type=str, help='databse engine')
+set_default_option('sqlalchemy_kwargs', default={},
+                   type=dict, help='sqlalchemy extra params')
+
 db = SQLAlchemy.create_instance(
     #: string like
     #: mysql://user:pass@host:port/db?charset=utf8
@@ -509,8 +514,3 @@ db = SQLAlchemy.create_instance(
     #: {'pool_recycle': 3600}
     options.sqlalchemy_kwargs,
 )
-
-#: sqlalchemy default configuration
-set_default_option('sqlalchemy_engine', type=str, help='databse engine')
-set_default_option('sqlalchemy_kwargs', default={},
-                   type=dict, help='sqlalchemy extra params')
