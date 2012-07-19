@@ -38,10 +38,10 @@ A minimal July Application::
         def get(self):
             self.write('Hello July')
 
-        handlers = [('/', HelloHandler)]
-        application = JulyApplication(handlers=handlers)
+    handlers = [('/', HelloHandler)]
+    application = JulyApplication(handlers=handlers)
 
-        if __name__ == '__main__':
+    if __name__ == '__main__':
         from july import run_server
         run_server(application)
 
